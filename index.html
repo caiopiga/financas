@@ -1,0 +1,1957 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Controle Financeiro</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary-color: #6366f1;
+            --primary-dark: #4f46e5;
+            --primary-light: #a5b4fc;
+            --secondary-color: #10b981;
+            --secondary-dark: #059669;
+            --danger-color: #ef4444;
+            --warning-color: #f59e0b;
+            --nubank-color: #8307bf;
+            --nubank-light: #9d33d9;
+            --inter-color: #ff7a00;
+            --inter-light: #ff9a3c;
+            --sofisa-color: #1a1a1a;
+            --sofisa-light: #2d2d2d;
+            --text-dark: #1f2937;
+            --text-light: #6b7280;
+            --bg-light: #f9fafb;
+            --bg-white: #ffffff;
+            --bg-card: #ffffff;
+            --border-light: #e5e7eb;
+            --success-color: #22c55e;
+            --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+            --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            --shadow-md: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+            --shadow-lg: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+            --border-radius-sm: 0.375rem;
+            --border-radius: 0.5rem;
+            --border-radius-lg: 0.75rem;
+            --transition: all 0.3s ease;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Poppins', sans-serif;
+        }
+        
+        body {
+            background-color: var(--bg-light);
+            color: var(--text-dark);
+            padding: 1.5rem;
+            font-size: 0.95rem;
+            line-height: 1.5;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0.5rem;
+        }
+        
+        .header {
+            background: linear-gradient(135deg, var(--primary-color), var(--primary-dark));
+            color: white;
+            padding: 1.5rem 2rem;
+            border-radius: var(--border-radius);
+            margin-bottom: 1.5rem;
+            text-align: center;
+            box-shadow: var(--shadow-md);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .header::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: linear-gradient(
+                0deg, 
+                rgba(255, 255, 255, 0.1) 0%, 
+                rgba(255, 255, 255, 0.05) 100%
+            );
+            transform: rotate(30deg);
+            z-index: 0;
+        }
+        
+        .header h1 {
+            position: relative;
+            z-index: 1;
+            font-weight: 600;
+            letter-spacing: 0.5px;
+            font-size: 1.75rem;
+        }
+        
+        .tabs {
+            display: flex;
+            background-color: var(--bg-white);
+            border-radius: var(--border-radius);
+            overflow: hidden;
+            margin-bottom: 1.5rem;
+            box-shadow: var(--shadow-sm);
+            border: 1px solid var(--border-light);
+        }
+        
+        .tab {
+            flex: 1;
+            padding: 0.95rem 1.25rem;
+            text-align: center;
+            cursor: pointer;
+            transition: var(--transition);
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            color: var(--text-light);
+            border-bottom: 2px solid transparent;
+        }
+        
+        .tab:hover {
+            color: var(--primary-color);
+            background-color: rgba(99, 102, 241, 0.05);
+        }
+        
+        .tab.active {
+            color: var(--primary-color);
+            border-bottom: 2px solid var(--primary-color);
+            background-color: rgba(99, 102, 241, 0.08);
+            font-weight: 600;
+        }
+        
+        .tab i {
+            font-size: 1rem;
+        }
+        
+        .tab-content {
+            display: none;
+            background-color: var(--bg-white);
+            padding: 1.5rem;
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow);
+            border: 1px solid var(--border-light);
+            animation: fadeIn 0.3s ease-in-out;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .tab-content.active {
+            display: block;
+        }
+        
+        .dashboard {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1.5rem;
+        }
+        
+        .card {
+            flex: 1;
+            min-width: 280px;
+            padding: 1.5rem;
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow-md);
+            color: white;
+            position: relative;
+            overflow: hidden;
+            transition: var(--transition);
+            transform: translateZ(0);
+        }
+        
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: var(--shadow-lg);
+        }
+        
+        .card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            right: 0;
+            bottom: 0;
+            left: 0;
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.15), rgba(255, 255, 255, 0));
+            z-index: 1;
+        }
+        
+        .card-content {
+            position: relative;
+            z-index: 2;
+        }
+        
+        .card h3 {
+            margin-bottom: 1.25rem;
+            font-size: 1.5rem;
+            font-weight: 600;
+            letter-spacing: 0.5px;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+        
+        .card-nubank {
+            background: linear-gradient(135deg, var(--nubank-color), var(--nubank-light));
+        }
+        
+        .card-inter {
+            background: linear-gradient(135deg, var(--inter-color), var(--inter-light));
+        }
+        
+        .card-sofisa {
+            background: linear-gradient(135deg, var(--sofisa-color), var(--sofisa-light));
+        }
+        
+        .card-info {
+            margin-bottom: 0.75rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0.5rem 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .card-info:last-of-type {
+            border-bottom: none;
+        }
+        
+        .card-info span:first-child {
+            font-weight: 500;
+            opacity: 0.9;
+        }
+        
+        .card-info span:last-child {
+            font-weight: 600;
+            font-size: 1.05rem;
+        }
+        
+        .card-footer {
+            font-size: 0.85rem;
+            margin-top: 1.25rem;
+            opacity: 0.75;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .card-footer i {
+            font-size: 0.8rem;
+        }
+        
+        h2 {
+            margin-bottom: 1.25rem;
+            font-weight: 600;
+            color: var(--text-dark);
+            font-size: 1.35rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        form {
+            margin-bottom: 1.5rem;
+        }
+        
+        .form-row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1rem;
+            margin-bottom: 1rem;
+        }
+        
+        .form-group {
+            flex: 1;
+            min-width: 220px;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+            color: var(--text-dark);
+            font-size: 0.9rem;
+        }
+        
+        input, select {
+            width: 100%;
+            padding: 0.75rem 1rem;
+            border: 1px solid var(--border-light);
+            border-radius: var(--border-radius-sm);
+            font-size: 0.95rem;
+            color: var(--text-dark);
+            background-color: var(--bg-white);
+            transition: var(--transition);
+        }
+        
+        input:focus, select:focus {
+            outline: none;
+            border-color: var(--primary-light);
+            box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+        }
+        
+        button {
+            padding: 0.75rem 1.5rem;
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            border-radius: var(--border-radius-sm);
+            cursor: pointer;
+            font-weight: 500;
+            transition: var(--transition);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            font-size: 0.95rem;
+            box-shadow: var(--shadow-sm);
+        }
+        
+        button:hover {
+            background-color: var(--primary-dark);
+            box-shadow: var(--shadow);
+        }
+        
+        button i {
+            font-size: 1rem;
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: separate;
+            border-spacing: 0;
+            margin-top: 1.25rem;
+            overflow: hidden;
+            border-radius: var(--border-radius-sm);
+            box-shadow: var(--shadow-sm);
+            border: 1px solid var(--border-light);
+        }
+        
+        th, td {
+            padding: 0.95rem 1rem;
+            text-align: left;
+        }
+        
+        th {
+            background-color: var(--bg-light);
+            font-weight: 600;
+            color: var(--text-dark);
+            border-bottom: 1px solid var(--border-light);
+            position: relative;
+        }
+        
+        th:not(:last-child)::after {
+            content: '';
+            position: absolute;
+            right: 0;
+            top: 25%;
+            height: 50%;
+            width: 1px;
+            background-color: var(--border-light);
+        }
+        
+        tr:not(:last-child) td {
+            border-bottom: 1px solid var(--border-light);
+        }
+        
+        tr:hover td {
+            background-color: rgba(99, 102, 241, 0.05);
+        }
+        
+        .action-btn {
+            padding: 0.25rem 0.5rem;
+            font-size: 0.75rem;
+            border-radius: var(--border-radius-sm);
+            margin-right: 0.5rem;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.25rem;
+            width: 1.8rem;
+            height: 1.8rem;
+        }
+        
+        .delete-btn {
+            background-color: var(--danger-color);
+        }
+        
+        .delete-btn:hover {
+            background-color: #dc2626;
+        }
+        
+        .edit-btn {
+            background-color: var(--primary-color);
+        }
+        
+        .edit-btn:hover {
+            background-color: var(--primary-dark);
+        }
+        
+        .payment-option {
+            display: inline-flex;
+            align-items: center;
+            margin-right: 1.5rem;
+            cursor: pointer;
+            font-weight: 500;
+            padding: 0.5rem 0.75rem;
+            border-radius: var(--border-radius-sm);
+            transition: var(--transition);
+            background-color: var(--bg-light);
+        }
+        
+        .payment-option:hover {
+            background-color: rgba(99, 102, 241, 0.1);
+        }
+        
+        .payment-option input {
+            margin-right: 0.5rem;
+            cursor: pointer;
+            width: auto;
+        }
+        
+        .payment-details {
+            margin-top: 1.5rem;
+            background-color: var(--bg-light);
+            padding: 1.25rem;
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow-sm);
+            border: 1px solid var(--border-light);
+        }
+        
+        .payment-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 0.85rem 0;
+            border-bottom: 1px solid var(--border-light);
+            align-items: center;
+        }
+        
+        .payment-item:last-child {
+            border-bottom: none;
+            font-weight: 600;
+            padding-top: 1.25rem;
+            font-size: 1.05rem;
+        }
+        
+        .payment-item span:first-child {
+            font-weight: 500;
+        }
+        
+        .payment-item span:last-child {
+            font-weight: 600;
+        }
+        
+        .hidden {
+            display: none;
+        }
+        
+        .pay-btn {
+            background-color: var(--success-color);
+            margin-top: 1.25rem;
+        }
+        
+        .pay-btn:hover {
+            background-color: var(--secondary-dark);
+        }
+        
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(3px);
+            animation: fadeIn 0.3s ease;
+        }
+        
+        .modal-content {
+            background-color: var(--bg-white);
+            margin: 5% auto;
+            padding: 2rem;
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow-lg);
+            width: 90%;
+            max-width: 650px;
+            animation: slideIn 0.3s ease;
+        }
+        
+        @keyframes slideIn {
+            from { transform: translateY(-50px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+        
+        .modal-content h2 {
+            margin-bottom: 1.5rem;
+            color: var(--text-dark);
+        }
+        
+        .close {
+            color: var(--text-light);
+            float: right;
+            font-size: 1.75rem;
+            font-weight: 700;
+            line-height: 1;
+            cursor: pointer;
+            transition: var(--transition);
+            width: 30px;
+            height: 30px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+        }
+        
+        .close:hover {
+            color: var(--text-dark);
+            background-color: var(--bg-light);
+        }
+        
+        .status-badge {
+            display: inline-flex;
+            align-items: center;
+            padding: 0.25rem 0.75rem;
+            border-radius: 1rem;
+            font-size: 0.85rem;
+            font-weight: 500;
+        }
+        
+        .badge-despesa {
+            background-color: rgba(239, 68, 68, 0.1);
+            color: var(--danger-color);
+        }
+        
+        .badge-receita {
+            background-color: rgba(34, 197, 94, 0.1);
+            color: var(--success-color);
+        }
+        
+        .section-divider {
+            margin: 1.5rem 0;
+            height: 1px;
+            background-color: var(--border-light);
+        }
+        
+        .valor-negativo {
+            color: var(--danger-color);
+        }
+        
+        .valor-positivo {
+            color: var(--success-color);
+        }
+        
+        .resumo-financeiro {
+            margin-top: 1.5rem;
+            background-color: var(--bg-white);
+            padding: 1.5rem;
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow);
+            border: 1px solid var(--border-light);
+            max-width: 1000px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+        
+        .resumo-cards {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1.25rem;
+            margin-bottom: 1.5rem;
+        }
+        
+        .resumo-card {
+            flex: 1;
+            min-width: 220px;
+            background-color: var(--bg-white);
+            border-radius: var(--border-radius);
+            padding: 1.25rem;
+            display: flex;
+            align-items: center;
+            box-shadow: var(--shadow-sm);
+            transition: var(--transition);
+            border: 1px solid var(--border-light);
+        }
+        
+        .resumo-card:hover {
+            transform: translateY(-3px);
+            box-shadow: var(--shadow-md);
+        }
+        
+        .resumo-icon {
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 1rem;
+            color: white;
+            font-size: 1.25rem;
+        }
+        
+        .card-receitas .resumo-icon {
+            background-color: var(--success-color);
+        }
+        
+        .card-despesas .resumo-icon {
+            background-color: var(--danger-color);
+        }
+        
+        .card-investimentos .resumo-icon {
+            background-color: var(--warning-color);
+        }
+        
+        .card-saldo .resumo-icon {
+            background-color: var(--primary-color);
+        }
+        
+        .resumo-content {
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .resumo-title {
+            font-size: 0.9rem;
+            color: var(--text-light);
+            margin-bottom: 0.25rem;
+        }
+        
+        .resumo-value {
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: var(--text-dark);
+        }
+        
+        .chart-container {
+            margin-top: 1.5rem;
+            background-color: var(--bg-white);
+            padding: 1.25rem;
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow-sm);
+            border: 1px solid var(--border-light);
+        }
+        
+        .chart-container h3 {
+            margin-bottom: 1rem;
+            font-size: 1.1rem;
+            color: var(--text-dark);
+        }
+        
+@media (max-width: 900px) {
+    body {
+        padding: 0.75rem;
+    }
+    
+    .container {
+        padding: 0;
+    }
+    
+    .dashboard {
+        flex-direction: column;
+    }
+    
+    .card {
+        min-width: 100%;
+    }
+    
+    .tab {
+        padding: 0.75rem 0.5rem;
+        font-size: 0.85rem;
+    }
+    
+    .resumo-cards {
+        flex-direction: column;
+    }
+    
+    .resumo-card {
+        min-width: 100%;
+    }
+}        
+@media (max-width: 768px) {
+    body {
+        padding: 0.5rem;
+        font-size: 0.9rem;
+    }
+    
+    .header {
+        padding: 1rem 1.5rem;
+    }
+    
+    .header h1 {
+        font-size: 1.35rem;
+    }
+    
+    .tab-content {
+        padding: 1rem;
+    }
+    
+    .tab span {
+        display: none;
+    }
+    
+    .tab i {
+        margin-right: 0;
+        font-size: 1.2rem;
+    }
+    
+    .form-row {
+        flex-direction: column;
+    }
+    
+    .form-group {
+        min-width: 100%;
+    }
+    
+    table {
+        font-size: 0.85rem;
+    }
+    
+    th, td {
+        padding: 0.6rem 0.4rem;
+        font-size: 0.85rem;
+    }
+    
+    .modal-content {
+        padding: 1.25rem;
+        margin: 5% auto;
+        width: 95%;
+    }
+    
+    .card {
+        padding: 1.25rem;
+    }
+    
+    .card h3 {
+        font-size: 1.25rem;
+    }
+}        
+@media (max-width: 480px) {
+    body {
+        padding: 0.25rem;
+    }
+    
+    .header {
+        padding: 0.75rem 1rem;
+        margin-bottom: 1rem;
+    }
+    
+    .header h1 {
+        font-size: 1.15rem;
+    }
+    
+    .tab-content {
+        padding: 0.75rem;
+    }
+    
+    .form-group {
+        min-width: 100%;
+    }
+    
+    input, select {
+        padding: 0.65rem 0.85rem;
+        font-size: 0.9rem;
+    }
+    
+    button {
+        padding: 0.65rem 1.25rem;
+        font-size: 0.9rem;
+    }
+    
+    .action-btn {
+        padding: 0.3rem 0.45rem;
+        font-size: 0.8rem;
+        width: 2rem;
+        height: 2rem;
+    }
+    
+    table {
+        display: block;
+        overflow-x: auto;
+        white-space: nowrap;
+        font-size: 0.8rem;
+    }
+    
+    th, td {
+        padding: 0.5rem 0.35rem;
+        font-size: 0.8rem;
+    }
+    
+    .card {
+        padding: 1rem;
+    }
+    
+    .card h3 {
+        font-size: 1.1rem;
+        margin-bottom: 1rem;
+    }
+    
+    .card-info {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 0.25rem;
+    }
+    
+    .resumo-icon {
+        width: 40px;
+        height: 40px;
+        font-size: 1.1rem;
+    }
+    
+    .resumo-value {
+        font-size: 1.1rem;
+    }
+    
+    .payment-option {
+        font-size: 0.85rem;
+        padding: 0.4rem 0.6rem;
+    }
+}
+    </style>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1><i class="fas fa-wallet"></i> Controle Financeiro</h1>
+        </div>
+        
+        <div class="tabs">
+            <div class="tab active" data-tab="dashboard"><i class="fas fa-chart-line"></i> <span>Dashboard</span></div>
+            <div class="tab" data-tab="lancamentos"><i class="fas fa-file-invoice-dollar"></i> <span>Lançamentos</span></div>
+<div class="tab" data-tab="pagamentos"><i class="fas fa-credit-card"></i> <span>Pagamentos</span></div>
+<div class="tab" data-tab="apartamento420b"><i class="fas fa-building"></i> <span>Apartamento 420B</span></div>
+<div class="tab" data-tab="configuracoes"><i class="fas fa-cog"></i> <span>Configurações</span></div>
+        </div>
+        
+        <div class="tab-content active" id="dashboard">
+            <div class="dashboard">
+                <div class="card card-nubank">
+                    <div class="card-content">
+                        <h3><i class="fab fa-cc-mastercard"></i> Nubank</h3>
+                        <div class="card-info">
+                            <span>Valor da fatura:</span>
+                            <span id="nubank-fatura">R$ 0,00</span>
+                        </div>
+                        <div class="card-info">
+                            <span>Limite disponível:</span>
+                            <span id="nubank-limite">R$ 0,00</span>
+                        </div>
+                        <div class="card-footer">
+                            <i class="far fa-calendar-alt"></i> Fecha dia 12 • Vence dia 15
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="card card-inter">
+                    <div class="card-content">
+                        <h3><i class="fab fa-cc-mastercard"></i> Inter</h3>
+                        <div class="card-info">
+                            <span>Valor da fatura:</span>
+                            <span id="inter-fatura">R$ 0,00</span>
+                        </div>
+                        <div class="card-info">
+                            <span>Limite disponível:</span>
+                            <span id="inter-limite">R$ 0,00</span>
+                        </div>
+                        <div class="card-footer">
+                            <i class="far fa-calendar-alt"></i> Fecha dia 24 • Vence dia 30
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="card card-sofisa">
+                    <div class="card-content">
+                        <h3><i class="fab fa-cc-visa"></i> Sofisa</h3>
+                        <div class="card-info">
+                            <span>Valor da fatura:</span>
+                            <span id="sofisa-fatura">R$ 0,00</span>
+                        </div>
+                        <div class="card-info">
+                            <span>Limite disponível:</span>
+                            <span id="sofisa-limite">R$ 0,00</span>
+                        </div>
+                        <div class="card-footer">
+                            <i class="far fa-calendar-alt"></i> Fecha dia 26 • Vence dia 01
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="resumo-financeiro">
+                    <h2><i class="fas fa-chart-pie"></i> Resumo Financeiro</h2>
+                    
+                    <div class="resumo-cards">
+                        <div class="resumo-card card-receitas">
+                            <div class="resumo-icon">
+                                <i class="fas fa-money-bill-wave"></i>
+                            </div>
+                            <div class="resumo-content">
+                                <span class="resumo-title">Entradas</span>
+                                <span class="resumo-value" id="total-entradas">R$ 0,00</span>
+                            </div>
+                        </div>
+                        
+                        <div class="resumo-card card-despesas">
+                            <div class="resumo-icon">
+                                <i class="fas fa-file-invoice-dollar"></i>
+                            </div>
+                            <div class="resumo-content">
+                                <span class="resumo-title">Despesas Fixas</span>
+                                <span class="resumo-value" id="total-despesas">R$ 0,00</span>
+                            </div>
+                        </div>
+                        
+                        <div class="resumo-card card-investimentos">
+                            <div class="resumo-icon">
+                                <i class="fas fa-piggy-bank"></i>
+                            </div>
+                            <div class="resumo-content">
+                                <span class="resumo-title">Investimentos</span>
+                                <span class="resumo-value" id="total-investimentos">R$ 0,00</span>
+                            </div>
+                        </div>
+                        
+                        <div class="resumo-card card-saldo">
+                            <div class="resumo-icon">
+                                <i class="fas fa-wallet"></i>
+                            </div>
+                            <div class="resumo-content">
+                                <span class="resumo-title">Livre</span>
+                                <span class="resumo-value" id="saldo-mensal">R$ 0,00</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="chart-container">
+                        <h3>Balanço Mensal</h3>
+                        <canvas id="balanco-chart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="tab-content" id="lancamentos">
+            <h2><i class="fas fa-plus-circle"></i> Novo Lançamento</h2>
+            <form id="form-lancamento">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="tipo">Tipo</label>
+                        <select id="tipo" required>
+                            <option value="">Selecione</option>
+                            <option value="Despesa">Despesa</option>
+                            <option value="Receita">Receita</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="descricao">Descrição</label>
+                        <input type="text" id="descricao" required placeholder="Ex: Compras do mercado">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="valor">Valor</label>
+                        <input type="number" id="valor" step="0.01" required placeholder="0.00">
+                    </div>
+                </div>
+                
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="categoria">Categoria</label>
+                        <select id="categoria" required>
+                            <option value="">Selecione</option>
+                            <option value="Alimentação">Alimentação</option>
+                            <option value="Transporte">Transporte</option>
+                            <option value="Saúde">Saúde</option>
+                            <option value="Lazer">Lazer</option>
+                            <option value="Educação">Educação</option>
+                            <option value="Outros">Outros</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="forma-pagamento">Forma de Pagamento</label>
+                        <select id="forma-pagamento" required>
+                            <option value="">Selecione</option>
+                            <option value="Cartão Nubank">Cartão Nubank</option>
+                            <option value="Cartão Inter">Cartão Inter</option>
+                            <option value="Cartão Sofisa">Cartão Sofisa</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="data">Data</label>
+                        <input type="date" id="data" required>
+                    </div>
+                </div>
+                
+                <button type="submit"><i class="fas fa-save"></i> Adicionar Lançamento</button>
+            </form>
+            
+            <div class="section-divider"></div>
+            
+            <h2><i class="fas fa-list"></i> Últimos Lançamentos</h2>
+            <table id="tabela-lancamentos">
+                <thead>
+                    <tr>
+                        <th>Data</th>
+                        <th>Descrição</th>
+                        <th>Forma de Pagamento</th>
+                        <th>Valor</th>
+                        <th>Ações</th>
+                    </tr>
+                </thead>
+                <tbody>
+                </tbody>
+            </table>
+        </div>
+        
+        <div class="tab-content" id="pagamentos">
+            <h2><i class="fas fa-money-bill-wave"></i> Pagamentos</h2>
+            <div class="payment-options">
+                <label class="payment-option">
+                    <input type="radio" name="payment-date" value="15" checked> Contas do dia 15
+                </label>
+                <label class="payment-option">
+                    <input type="radio" name="payment-date" value="30"> Contas do dia 30
+                </label>
+            </div>
+            
+            <div id="payment-dia15" class="payment-details">
+                <div class="payment-item">
+                    <span>Aluguel:</span>
+                    <span id="aluguel-valor">R$ 0,00</span>
+                </div>
+                <div class="payment-item">
+                    <span>Investir:</span>
+                    <span id="investimento-dia15-valor">R$ 0,00</span>
+                </div>
+                <div class="payment-item">
+                    <span>Fatura Nubank:</span>
+                    <span id="fatura-nubank-valor">R$ 0,00</span>
+                </div>
+                <div class="payment-item">
+                    <span>Apartamento:</span>
+                    <span id="apartamento-valor">R$ 0,00</span>
+                </div>
+                <div class="payment-item">
+                    <span>Antecipação:</span>
+                    <span id="antecipacao-valor">R$ 0,00</span>
+                </div>
+                <div class="payment-item">
+                    <span>Evolução de Obra:</span>
+                    <span id="evolucao-obra-valor">R$ 0,00</span>
+                </div>
+                <div class="payment-item">
+                    <span>Total:</span>
+                    <span id="total-dia15">R$ 0,00</span>
+                </div>
+                <div style="display: flex; gap: 1rem; flex-wrap: wrap; margin-top: 1.25rem;">
+                    <button id="relatorio-nubank" class="pay-btn" style="background-color: #10b981;">
+                        <i class="fas fa-file-alt"></i> Pagar Contas
+                    </button>
+                </div>
+            </div>
+            
+            <div id="payment-dia30" class="payment-details hidden">
+                <div class="payment-item">
+                    <span>Vale Transporte:</span>
+                    <span id="vale-transporte-valor">R$ 0,00</span>
+                </div>
+                <div class="payment-item">
+                    <span>Fatura Inter:</span>
+                    <span id="fatura-inter-valor">R$ 0,00</span>
+                </div>
+                <div class="payment-item">
+                    <span>Fatura Sofisa:</span>
+                    <span id="fatura-sofisa-dia30-valor">R$ 0,00</span>
+                </div>
+                <div class="payment-item">
+                    <span>Investir:</span>
+                    <span id="investimento-dia30-valor">R$ 0,00</span>
+                </div>
+                <div class="payment-item">
+                    <span>Total:</span>
+                    <span id="total-dia30">R$ 0,00</span>
+                </div>
+                <div style="display: flex; gap: 1rem; flex-wrap: wrap; margin-top: 1.25rem;">
+                    <button id="relatorio-inter" class="pay-btn" style="background-color: #10b981;">
+                        <i class="fas fa-file-alt"></i> Pagar Contas
+                    </button>
+                </div>
+            </div>
+</div>
+
+<div class="tab-content" id="apartamento420b">
+    <h2><i class="fas fa-building"></i> Controle de Parcelas do Apartamento </h2>
+    
+    <div class="resumo-cards" style="margin-bottom: 1.5rem;">
+        <div class="resumo-card">
+            <div class="resumo-icon" style="background-color: var(--success-color);">
+                <i class="fas fa-check-circle"></i>
+            </div>
+            <div class="resumo-content">
+                <span class="resumo-title">Parcelas Pagas</span>
+                <span class="resumo-value" id="parcelas-pagas">0</span>
+            </div>
+        </div>
+        
+        <div class="resumo-card">
+            <div class="resumo-icon" style="background-color: var(--warning-color);">
+                <i class="fas fa-clock"></i>
+            </div>
+            <div class="resumo-content">
+                <span class="resumo-title">Parcelas Pendentes</span>
+                <span class="resumo-value" id="parcelas-pendentes">0</span>
+            </div>
+        </div>
+        
+        <div class="resumo-card">
+            <div class="resumo-icon" style="background-color: var(--primary-color);">
+                <i class="fas fa-wallet"></i>
+            </div>
+            <div class="resumo-content">
+                <span class="resumo-title">Total Pago</span>
+                <span class="resumo-value" id="total-pago-apt">R$ 0,00</span>
+            </div>
+        </div>
+        
+        <div class="resumo-card">
+            <div class="resumo-icon" style="background-color: var(--danger-color);">
+                <i class="fas fa-money-bill"></i>
+            </div>
+            <div class="resumo-content">
+                <span class="resumo-title">Construção</span>
+                <span class="resumo-value" id="total-construcao-apt">0.000%</span>
+            </div>
+        </div>
+    </div>
+    
+    <table id="tabela-apartamento">
+        <thead>
+            <tr>
+                <th>Mês</th>
+                <th>Data</th>
+                <th>Parcela Entrada</th>
+                <th>Construção %</th>
+                <th>Evolução de Obra</th>
+                <th>Parcela Total</th>
+                <th>Situação</th>
+                <th>Ações</th>
+            </tr>
+        </thead>
+        <tbody>
+        </tbody>
+    </table>
+</div>
+               <div class="tab-content" id="configuracoes">
+            <h2><i class="fas fa-sliders-h"></i> Configurações</h2>
+            <form id="form-configuracoes">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="salario1">Salário 1 (Dia 15)</label>
+                        <input type="number" id="salario1" min="0" step="0.01" placeholder="0.00">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="salario2">Salário 2 (Dia 30)</label>
+                        <input type="number" id="salario2" min="0" step="0.01" placeholder="0.00">
+                    </div>
+                </div>
+                
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="aluguel">Aluguel</label>
+                        <input type="number" id="aluguel" min="0" step="0.01" placeholder="0.00">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="vale-transporte">Vale Transporte</label>
+                        <input type="number" id="vale-transporte" min="0" step="0.01" placeholder="0.00">
+                    </div>
+                </div>
+                
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="apartamento">Apartamento</label>
+                        <input type="number" id="apartamento" min="0" step="0.01" placeholder="0.00">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="antecipacao">Antecipação</label>
+                        <input type="number" id="antecipacao" min="0" step="0.01" placeholder="0.00">
+                    </div>
+                </div>
+                
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="evolucao-obra">Evolução de Obra</label>
+                        <input type="number" id="evolucao-obra" min="0" step="0.01" placeholder="0.00">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="gympass">Gympass</label>
+                        <input type="number" id="gympass" min="0" step="0.01" placeholder="0.00">
+                    </div>
+                </div>
+                
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="corinthians">Corinthians</label>
+                        <input type="number" id="corinthians" min="0" step="0.01" placeholder="0.00">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="psn">PSN</label>
+                        <input type="number" id="psn" min="0" step="0.01" placeholder="0.00">
+                    </div>
+                </div>
+                
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="investimento-dia15">Investimento dia 15</label>
+                        <input type="number" id="investimento-dia15" min="0" step="0.01" placeholder="0.00">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="investimento-dia30">Investimento dia 30</label>
+                        <input type="number" id="investimento-dia30" min="0" step="0.01" placeholder="0.00">
+                    </div>
+                </div>
+                
+                <button type="submit"><i class="fas fa-save"></i> Salvar Configurações</button>
+            </form>
+        </div>
+    </div>
+    
+    <div id="editModal" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <h2>Editar Lançamento</h2>
+            <form id="form-edicao">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="edit-tipo">Tipo</label>
+                        <select id="edit-tipo" required>
+                            <option value="">Selecione</option>
+                            <option value="Despesa">Despesa</option>
+                            <option value="Receita">Receita</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="edit-descricao">Descrição</label>
+                        <input type="text" id="edit-descricao" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="edit-valor">Valor</label>
+                        <input type="number" id="edit-valor" step="0.01" required>
+                    </div>
+                </div>
+                
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="edit-categoria">Categoria</label>
+                        <select id="edit-categoria" required>
+                            <option value="">Selecione</option>
+                            <option value="Alimentação">Alimentação</option>
+                            <option value="Transporte">Transporte</option>
+                            <option value="Saúde">Saúde</option>
+                            <option value="Lazer">Lazer</option>
+                            <option value="Educação">Educação</option>
+                            <option value="Outros">Outros</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="edit-forma-pagamento">Forma de Pagamento</label>
+                        <select id="edit-forma-pagamento" required>
+                            <option value="">Selecione</option>
+                            <option value="Cartão Nubank">Cartão Nubank</option>
+                            <option value="Cartão Inter">Cartão Inter</option>
+                            <option value="Cartão Sofisa">Cartão Sofisa</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="edit-data">Data</label>
+                        <input type="date" id="edit-data" required>
+                    </div>
+                </div>
+                
+                <input type="hidden" id="edit-index">
+                <button type="submit"><i class="fas fa-save"></i> Salvar Alterações</button>
+            </form>
+        </div>
+    </div>
+</div>
+
+    <div id="editModalApartamento" class="modal">
+        <div class="modal-content">
+            <span class="close" id="closeApartamento">&times;</span>
+            <h2>Editar Parcela do Apartamento</h2>
+            <form id="form-edicao-apartamento">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="edit-mes">Mês</label>
+                        <input type="text" id="edit-mes" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="edit-data-apt">Data</label>
+                        <input type="date" id="edit-data-apt" required>
+                    </div>
+                </div>
+                
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="edit-parcela-entrada">Parcela Entrada</label>
+                        <input type="number" id="edit-parcela-entrada" step="0.01" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="edit-construcao">Construção %</label>
+                        <input type="number" id="edit-construcao" step="0.001" min="0">
+                    </div>
+                </div>
+                
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="edit-evolucao-obra">Evolução de Obra</label>
+                        <input type="number" id="edit-evolucao-obra" step="0.01" required>
+                    </div>
+                    
+<div class="form-group">
+    <label for="edit-parcela-total">Parcela Total</label>
+    <input type="number" id="edit-parcela-total" step="0.01" readonly style="background-color: #f3f4f6; cursor: not-allowed;">
+</div>
+                </div>
+                
+                <input type="hidden" id="edit-index-apt">
+                <button type="submit"><i class="fas fa-save"></i> Salvar Alterações</button>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        let lancamentos = JSON.parse(localStorage.getItem('lancamentos')) || [];
+        let configuracoes = JSON.parse(localStorage.getItem('configuracoes')) || {
+            salario1: 0,
+            salario2: 0,
+            aluguel: 0,
+            valeTransporte: 0,
+            apartamento: 0,
+            antecipacao: 0,
+            evolucaoObra: 0,
+            gympass: 0,
+            corinthians: 0,
+            psn: 0,
+            investimentoDia15: 0,
+            investimentoDia30: 0
+        };
+let parcelasApartamento = JSON.parse(localStorage.getItem('parcelasApartamento')) || [
+    { mes: "Ato", data: "2025-08-17", parcelaEntrada: 800.00, construcao: 0.000, evolucaoObra: 0.00, parcelaTotal: 800.00, situacao: "PAGO" },
+    { mes: "1", data: "2025-09-15", parcelaEntrada: 706.37, construcao: 0.000, evolucaoObra: 442.43, parcelaTotal: 1148.80, situacao: "PAGO" },
+    { mes: "2", data: "2025-10-15", parcelaEntrada: 710.04, construcao: 0.000, evolucaoObra: 432.76, parcelaTotal: 1142.80, situacao: "PAGO" },
+    { mes: "3", data: "2025-11-15", parcelaEntrada: 711.25, construcao: 0.000, evolucaoObra: 433.53, parcelaTotal: 1144.78, situacao: "PAGO" },
+    { mes: "4", data: "2025-12-15", parcelaEntrada: 713.38, construcao: 2.300, evolucaoObra: 463.52, parcelaTotal: 1176.90, situacao: "PAGO" },
+    { mes: "Parcial", data: "2025-12-20", parcelaEntrada: 3333.33, construcao: 0, evolucaoObra: 0, parcelaTotal: 3227.20, situacao: "PAGO" },
+    { mes: "5", data: "2026-01-15", parcelaEntrada: 715.31, construcao: 4.610, evolucaoObra: 570.46, parcelaTotal: 1285.77, situacao: "NÃO PAGO" },
+    { mes: "6", data: "2026-02-15", parcelaEntrada: 700.00, construcao: 0, evolucaoObra: 376.44, parcelaTotal: 1076.44, situacao: "NÃO PAGO" },
+    { mes: "7", data: "2026-03-15", parcelaEntrada: 700.00, construcao: 0, evolucaoObra: 376.59, parcelaTotal: 1076.59, situacao: "NÃO PAGO" },
+    { mes: "8", data: "2026-04-15", parcelaEntrada: 700.00, construcao: 0, evolucaoObra: 386.69, parcelaTotal: 1086.69, situacao: "NÃO PAGO" },
+    { mes: "9", data: "2026-05-15", parcelaEntrada: 700.00, construcao: 0, evolucaoObra: 397.24, parcelaTotal: 1097.24, situacao: "NÃO PAGO" },
+    { mes: "10", data: "2026-06-15", parcelaEntrada: 700.00, construcao: 0, evolucaoObra: 409.42, parcelaTotal: 1109.42, situacao: "NÃO PAGO" },
+    { mes: "11", data: "2026-07-15", parcelaEntrada: 700.00, construcao: 0, evolucaoObra: 423.38, parcelaTotal: 1123.38, situacao: "NÃO PAGO" },
+    { mes: "12", data: "2026-08-15", parcelaEntrada: 700.00, construcao: 0, evolucaoObra: 446.55, parcelaTotal: 1146.55, situacao: "NÃO PAGO" },
+    { mes: "13", data: "2026-09-15", parcelaEntrada: 700.00, construcao: 0, evolucaoObra: 470.47, parcelaTotal: 1170.47, situacao: "NÃO PAGO" },
+    { mes: "14", data: "2026-10-15", parcelaEntrada: 700.00, construcao: 0, evolucaoObra: 499.73, parcelaTotal: 1199.73, situacao: "NÃO PAGO" },
+    { mes: "15", data: "2026-11-15", parcelaEntrada: 700.00, construcao: 0, evolucaoObra: 528.85, parcelaTotal: 1228.85, situacao: "NÃO PAGO" },
+    { mes: "16", data: "2026-12-15", parcelaEntrada: 700.00, construcao: 0, evolucaoObra: 565.24, parcelaTotal: 1265.24, situacao: "NÃO PAGO" },
+    { mes: "Parcial", data: "2026-12-20", parcelaEntrada: 3333.33, construcao: 0, evolucaoObra: 0, parcelaTotal: 3333.33, situacao: "NÃO PAGO" },
+    { mes: "17", data: "2027-01-15", parcelaEntrada: 700.00, construcao: 0, evolucaoObra: 610.84, parcelaTotal: 1310.84, situacao: "NÃO PAGO" },
+    { mes: "18", data: "2027-02-15", parcelaEntrada: 700.00, construcao: 0, evolucaoObra: 657.63, parcelaTotal: 1357.63, situacao: "NÃO PAGO" },
+    { mes: "19", data: "2027-03-15", parcelaEntrada: 700.00, construcao: 0, evolucaoObra: 714.08, parcelaTotal: 1414.08, situacao: "NÃO PAGO" },
+    { mes: "20", data: "2027-04-15", parcelaEntrada: 700.00, construcao: 0, evolucaoObra: 779.74, parcelaTotal: 1479.74, situacao: "NÃO PAGO" },
+    { mes: "21", data: "2027-05-15", parcelaEntrada: 700.00, construcao: 0, evolucaoObra: 850.15, parcelaTotal: 1550.15, situacao: "NÃO PAGO" },
+    { mes: "22", data: "2027-06-15", parcelaEntrada: 700.00, construcao: 0, evolucaoObra: 921.89, parcelaTotal: 1621.89, situacao: "NÃO PAGO" },
+    { mes: "23", data: "2027-07-15", parcelaEntrada: 700.00, construcao: 0, evolucaoObra: 981.46, parcelaTotal: 1681.46, situacao: "NÃO PAGO" },
+    { mes: "24", data: "2027-08-15", parcelaEntrada: 700.00, construcao: 0, evolucaoObra: 1042.95, parcelaTotal: 1742.95, situacao: "NÃO PAGO" },
+    { mes: "25", data: "2027-09-15", parcelaEntrada: 639.42, construcao: 0, evolucaoObra: 1103.71, parcelaTotal: 1743.13, situacao: "NÃO PAGO" },
+    { mes: "26", data: "2027-10-15", parcelaEntrada: 639.42, construcao: 0, evolucaoObra: 1175.31, parcelaTotal: 1814.73, situacao: "NÃO PAGO" },
+    { mes: "27", data: "2027-11-15", parcelaEntrada: 639.42, construcao: 0, evolucaoObra: 1248.24, parcelaTotal: 1887.66, situacao: "NÃO PAGO" },
+    { mes: "28", data: "2027-12-15", parcelaEntrada: 639.42, construcao: 0, evolucaoObra: 1322.21, parcelaTotal: 1961.63, situacao: "NÃO PAGO" },
+    { mes: "Parcial", data: "2027-12-20", parcelaEntrada: 3333.33, construcao: 0, evolucaoObra: 0, parcelaTotal: 3333.33, situacao: "NÃO PAGO" },
+    { mes: "29", data: "2028-01-15", parcelaEntrada: 639.42, construcao: 0, evolucaoObra: 1386.39, parcelaTotal: 2025.81, situacao: "NÃO PAGO" },
+    { mes: "30", data: "2028-02-15", parcelaEntrada: 639.42, construcao: 0, evolucaoObra: 1457.83, parcelaTotal: 2097.25, situacao: "NÃO PAGO" },
+    { mes: "31", data: "2028-03-15", parcelaEntrada: 639.42, construcao: 0, evolucaoObra: 1520.22, parcelaTotal: 2159.64, situacao: "NÃO PAGO" },
+    { mes: "32", data: "2028-04-15", parcelaEntrada: 639.42, construcao: 0, evolucaoObra: 1584.54, parcelaTotal: 2223.96, situacao: "NÃO PAGO" },
+    { mes: "33", data: "2028-05-15", parcelaEntrada: 100.00, construcao: 0, evolucaoObra: 1637.87, parcelaTotal: 1737.87, situacao: "NÃO PAGO" }
+];
+
+function atualizarTabelaApartamento() {
+    const tbody = document.querySelector('#tabela-apartamento tbody');
+    tbody.innerHTML = '';
+    
+    let parcelasPagas = 0;
+    let totalPago = 0;
+    let totalConstrucao = 0;
+    
+    parcelasApartamento.forEach((parcela, index) => {
+        const tr = document.createElement('tr');
+        const [ano, mes, dia] = parcela.data.split("-");
+        const dataFormatada = `${dia}/${mes}/${ano}`;
+        
+        const isPago = parcela.situacao === "PAGO";
+if (isPago) {
+    parcelasPagas++;
+    totalPago += parcela.parcelaTotal;
+}
+totalConstrucao += parcela.construcao;
+        
+        const construcaoText = parcela.construcao > 0 ? parcela.construcao.toFixed(3) + '%' : '-';
+        
+        tr.innerHTML = `
+            <td>${parcela.mes}</td>
+            <td>${dataFormatada}</td>
+            <td>${formatarMoeda(parcela.parcelaEntrada)}</td>
+            <td>${construcaoText}</td>
+            <td>${formatarMoeda(parcela.evolucaoObra)}</td>
+            <td><strong>${formatarMoeda(parcela.parcelaTotal)}</strong></td>
+            <td><span class="status-badge ${isPago ? 'badge-receita' : 'badge-despesa'}">${parcela.situacao}</span></td>
+            <td>
+                <button class="action-btn edit-btn" data-index="${index}" onclick="abrirModalEdicaoApartamento(${index})">
+                    ✎
+                </button>
+                <button class="action-btn ${isPago ? 'delete-btn' : 'edit-btn'}" style="background-color: ${isPago ? 'var(--danger-color)' : 'var(--success-color)'};" data-index="${index}" onclick="toggleSituacaoParcela(${index})">
+                    ${isPago ? '✗' : '✓'}
+                </button>
+            </td>
+        `;
+        
+        tbody.appendChild(tr);
+    });
+    
+    document.getElementById('parcelas-pagas').textContent = parcelasPagas + ' / ' + parcelasApartamento.length;
+    document.getElementById('parcelas-pendentes').textContent = (parcelasApartamento.length - parcelasPagas);
+    document.getElementById('total-pago-apt').textContent = formatarMoeda(totalPago);
+    document.getElementById('total-construcao-apt').textContent = totalConstrucao.toFixed(3) + '%';
+}
+function toggleSituacaoParcela(index) {
+    parcelasApartamento[index].situacao = parcelasApartamento[index].situacao === "PAGO" ? "NÃO PAGO" : "PAGO";
+    localStorage.setItem('parcelasApartamento', JSON.stringify(parcelasApartamento));
+    atualizarTabelaApartamento();
+}
+        const modal = document.getElementById('editModal');
+        const closeModal = document.querySelector('.close');
+        let balancoChart;
+function toggleSituacaoParcela(index) {
+    parcelasApartamento[index].situacao = parcelasApartamento[index].situacao === "PAGO" ? "NÃO PAGO" : "PAGO";
+    localStorage.setItem('parcelasApartamento', JSON.stringify(parcelasApartamento));
+    atualizarTabelaApartamento();
+}
+
+function abrirModalEdicaoApartamento(index) {
+    const parcela = parcelasApartamento[index];
+    document.getElementById('edit-mes').value = parcela.mes;
+    document.getElementById('edit-data-apt').value = parcela.data;
+    document.getElementById('edit-parcela-entrada').value = parcela.parcelaEntrada;
+    document.getElementById('edit-construcao').value = parcela.construcao;
+    document.getElementById('edit-evolucao-obra').value = parcela.evolucaoObra;
+    document.getElementById('edit-parcela-total').value = parcela.parcelaTotal;
+    document.getElementById('edit-index-apt').value = index;
+    document.getElementById('editModalApartamento').style.display = 'block';
+}
+        function formatarMoeda(valor) {
+            return 'R$ ' + valor.toFixed(2).replace('.', ',');
+        }
+
+        function atualizarDashboard() {
+            const faturaNubank = calcularFaturaNubank();
+            const faturaInter = calcularFaturaInter();
+            const faturaSofisa = calcularFaturaSofisa();
+            
+            document.getElementById('nubank-fatura').textContent = formatarMoeda(faturaNubank);
+            document.getElementById('inter-fatura').textContent = formatarMoeda(faturaInter);
+            document.getElementById('sofisa-fatura').textContent = formatarMoeda(faturaSofisa);
+            
+            // Limite Nubank = Salário 1 - (Aluguel + Investir + Fatura Nubank + Apartamento + Antecipação + Evolução de Obra)
+            const limiteNubank = configuracoes.salario1 - ((configuracoes.aluguel || 0) + (configuracoes.investimentoDia15 || 0) + faturaNubank + (configuracoes.apartamento || 0) + (configuracoes.antecipacao || 0) + (configuracoes.evolucaoObra || 0));
+            document.getElementById('nubank-limite').textContent = formatarMoeda(limiteNubank);
+            
+            // Limite Inter = Salário 2 - (Vale Transporte + Fatura Inter + Fatura Sofisa + Investir)
+            const limiteInter = 0;
+            document.getElementById('inter-limite').textContent = formatarMoeda(limiteInter);
+            
+            const limiteSofisa = configuracoes.salario2 - ((configuracoes.valeTransporte || 0) + faturaInter + faturaSofisa + (configuracoes.investimentoDia30 || 0));
+            document.getElementById('sofisa-limite').textContent = formatarMoeda(limiteSofisa);
+            
+            atualizarResumoFinanceiro();
+        }
+
+        function calcularFaturaNubank() {
+            return lancamentos
+                .filter(lancamento => lancamento.formaPagamento === 'Cartão Nubank')
+                .reduce((total, lancamento) => total + parseFloat(lancamento.valor), 0);
+        }
+
+        function calcularFaturaInter() {
+            const valorLancamentos = lancamentos
+                .filter(lancamento => lancamento.formaPagamento === 'Cartão Inter')
+                .reduce((total, lancamento) => total + parseFloat(lancamento.valor), 0);
+            
+const valoresFixos = 0;            
+            return valorLancamentos + valoresFixos;
+        }
+
+        function calcularFaturaSofisa() {
+            const valorLancamentos = lancamentos
+                .filter(lancamento => lancamento.formaPagamento === 'Cartão Sofisa')
+                .reduce((total, lancamento) => total + parseFloat(lancamento.valor), 0);
+            
+const valoresFixos = parseFloat(configuracoes.corinthians || 0) +
+                     parseFloat(configuracoes.psn || 0) +
+                     parseFloat(configuracoes.gympass || 0);            
+            return valorLancamentos + valoresFixos;
+        }
+
+        function atualizarTabelaLancamentos() {
+            const tbody = document.querySelector('#tabela-lancamentos tbody');
+            tbody.innerHTML = '';
+            
+            lancamentos.forEach((lancamento, index) => {
+                const tr = document.createElement('tr');
+                const [ano, mes, dia] = lancamento.data.split("-");
+                const dataFormatada = `${dia}/${mes}/${ano}`;
+                
+                const valorFloat = parseFloat(lancamento.valor);
+                const valorFormatado = formatarMoeda(Math.abs(valorFloat));
+                const valorHtml = valorFloat < 0 ? 
+                    `<span style="color: red">-${valorFormatado}</span>` : 
+                    `<span style="color: green">${valorFormatado}</span>`;
+                
+                tr.innerHTML = `
+                    <td>${dataFormatada}</td>
+                    <td>${lancamento.descricao}</td>
+                    <td>${lancamento.formaPagamento}</td>
+                    <td>${valorHtml}</td>
+                    <td>
+                        <button class="action-btn edit-btn" data-index="${index}">✎</button>
+                        <button class="action-btn delete-btn" data-index="${index}">×</button>
+                    </td>
+                `;
+                
+                tbody.appendChild(tr);
+            });
+            
+            document.querySelectorAll('.delete-btn').forEach(button => {
+                button.addEventListener('click', function() {
+                    const index = parseInt(this.getAttribute('data-index'));
+                    lancamentos.splice(index, 1);
+                    localStorage.setItem('lancamentos', JSON.stringify(lancamentos));
+                    atualizarTabelaLancamentos();
+                    atualizarDashboard();
+                    atualizarPagamentos();
+                });
+            });
+            
+            document.querySelectorAll('.edit-btn').forEach(button => {
+                button.addEventListener('click', function() {
+                    const index = parseInt(this.getAttribute('data-index'));
+                    abrirModalEdicao(index);
+                });
+            });
+        }
+
+        function abrirModalEdicao(index) {
+            const lancamento = lancamentos[index];
+            document.getElementById('edit-tipo').value = lancamento.tipo;
+            document.getElementById('edit-descricao').value = lancamento.descricao;
+            document.getElementById('edit-valor').value = lancamento.valor;
+            document.getElementById('edit-categoria').value = lancamento.categoria;
+            document.getElementById('edit-forma-pagamento').value = lancamento.formaPagamento;
+            document.getElementById('edit-data').value = lancamento.data;
+            document.getElementById('edit-index').value = index;
+            modal.style.display = 'block';
+        }
+
+        closeModal.addEventListener('click', function() {
+            modal.style.display = 'none';
+        });
+
+        window.addEventListener('click', function(event) {
+            if (event.target == modal) {
+                modal.style.display = 'none';
+            }
+        });
+
+function atualizarPagamentos() {
+    const faturaNubank = calcularFaturaNubank();
+    const faturaInter = calcularFaturaInter();
+    const faturaSofisa = calcularFaturaSofisa();
+
+    /* ===== DIA 15 ===== */
+    const despesasDia15 =
+        (parseFloat(configuracoes.aluguel) || 0) +
+        faturaNubank +
+        (parseFloat(configuracoes.apartamento) || 0) +
+        (parseFloat(configuracoes.antecipacao) || 0) +
+        (parseFloat(configuracoes.evolucaoObra) || 0);
+
+    const investimentoDia15 =
+        (parseFloat(configuracoes.salario1) || 0) - despesasDia15;
+
+    document.getElementById('aluguel-valor').textContent = formatarMoeda(configuracoes.aluguel || 0);
+    document.getElementById('fatura-nubank-valor').textContent = formatarMoeda(faturaNubank);
+    document.getElementById('apartamento-valor').textContent = formatarMoeda(configuracoes.apartamento || 0);
+    document.getElementById('antecipacao-valor').textContent = formatarMoeda(configuracoes.antecipacao || 0);
+    document.getElementById('evolucao-obra-valor').textContent = formatarMoeda(configuracoes.evolucaoObra || 0);
+    document.getElementById('investimento-dia15-valor').textContent = formatarMoeda(investimentoDia15);
+    document.getElementById('total-dia15').textContent = formatarMoeda(configuracoes.salario1 || 0);
+
+    /* ===== DIA 30 ===== */
+    const despesasDia30 =
+        (parseFloat(configuracoes.valeTransporte) || 0) +
+        faturaInter +
+        faturaSofisa;
+
+    const investimentoDia30 =
+        (parseFloat(configuracoes.salario2) || 0) - despesasDia30;
+
+    document.getElementById('vale-transporte-valor').textContent = formatarMoeda(configuracoes.valeTransporte || 0);
+    document.getElementById('fatura-inter-valor').textContent = formatarMoeda(faturaInter);
+    document.getElementById('fatura-sofisa-dia30-valor').textContent = formatarMoeda(faturaSofisa);
+    document.getElementById('investimento-dia30-valor').textContent = formatarMoeda(investimentoDia30);
+    document.getElementById('total-dia30').textContent = formatarMoeda(configuracoes.salario2 || 0);
+}
+
+        function carregarConfiguracoes() {
+            document.getElementById('salario1').value = configuracoes.salario1 || '';
+            document.getElementById('salario2').value = configuracoes.salario2 || '';
+            document.getElementById('aluguel').value = configuracoes.aluguel || '';
+            document.getElementById('vale-transporte').value = configuracoes.valeTransporte || '';
+            document.getElementById('apartamento').value = configuracoes.apartamento || '';
+            document.getElementById('antecipacao').value = configuracoes.antecipacao || '';
+            document.getElementById('evolucao-obra').value = configuracoes.evolucaoObra || '';
+            document.getElementById('gympass').value = configuracoes.gympass || '';
+            document.getElementById('corinthians').value = configuracoes.corinthians || '';
+            document.getElementById('psn').value = configuracoes.psn || '';
+            document.getElementById('investimento-dia15').value = configuracoes.investimentoDia15 || '';
+            document.getElementById('investimento-dia30').value = configuracoes.investimentoDia30 || '';
+        }
+
+        function atualizarResumoFinanceiro() {
+            const totalEntradas = (parseFloat(configuracoes.salario1) || 0) + (parseFloat(configuracoes.salario2) || 0);
+const despesasDia15 =
+    (parseFloat(configuracoes.aluguel) || 0) +
+    calcularFaturaNubank() +
+    (parseFloat(configuracoes.apartamento) || 0) +
+    (parseFloat(configuracoes.antecipacao) || 0) +
+    (parseFloat(configuracoes.evolucaoObra) || 0);
+
+const despesasDia30 =
+    (parseFloat(configuracoes.valeTransporte) || 0) +
+    calcularFaturaInter() +
+    calcularFaturaSofisa();
+
+const totalInvestimentos =
+    ((configuracoes.salario1 || 0) - despesasDia15) +
+    ((configuracoes.salario2 || 0) - despesasDia30);
+            const despesasFixas = (parseFloat(configuracoes.aluguel) || 0) + 
+                                 (parseFloat(configuracoes.apartamento) || 0) + 
+                                 (parseFloat(configuracoes.antecipacao) || 0) + 
+                                 (parseFloat(configuracoes.evolucaoObra) || 0) + 
+                                 (parseFloat(configuracoes.valeTransporte) || 0) + 
+                                 (parseFloat(configuracoes.corinthians) || 0) + 
+                                 (parseFloat(configuracoes.psn) || 0) + 
+                                 (parseFloat(configuracoes.gympass) || 0);
+            
+            const saldo = totalEntradas - despesasFixas - totalInvestimentos;
+            
+            document.getElementById('total-entradas').textContent = formatarMoeda(totalEntradas);
+            document.getElementById('total-despesas').textContent = formatarMoeda(despesasFixas);
+            document.getElementById('total-investimentos').textContent = formatarMoeda(totalInvestimentos);
+            
+            const saldoElement = document.getElementById('saldo-mensal');
+            saldoElement.textContent = formatarMoeda(Math.abs(saldo));
+            saldoElement.className = saldo >= 0 ? 'resumo-value valor-positivo' : 'resumo-value valor-negativo';
+            
+            atualizarGraficoBalanco(totalEntradas, despesasFixas, totalInvestimentos, saldo);
+        }
+
+        function atualizarGraficoBalanco(entradas, despesas, investimentos, saldo) {
+            const ctx = document.getElementById('balanco-chart').getContext('2d');
+            
+            if (balancoChart) {
+                balancoChart.destroy();
+            }
+            
+            balancoChart = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: ['Entradas', 'Despesas Fixas', 'Investimentos', 'Livre'],
+                    datasets: [{
+                        label: 'Valor (R$)',
+                        data: [entradas, despesas, investimentos, saldo >= 0 ? saldo : 0],
+                        backgroundColor: [
+                            'rgba(34, 197, 94, 0.7)',
+                            'rgba(239, 68, 68, 0.7)',
+                            'rgba(245, 158, 11, 0.7)',
+                            'rgba(99, 102, 241, 0.7)'
+                        ],
+                        borderColor: [
+                            'rgba(34, 197, 94, 1)',
+                            'rgba(239, 68, 68, 1)',
+                            'rgba(245, 158, 11, 1)',
+                            'rgba(99, 102, 241, 1)'
+                        ],
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        legend: {
+                            display: false
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    let label = context.dataset.label || '';
+                                    if (label) {
+                                        label += ': ';
+                                    }
+                                    label += formatarMoeda(context.raw);
+                                    return label;
+                                }
+                            }
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            ticks: {
+                                callback: function(value) {
+                                    return 'R$ ' + value;
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        function gerarRelatorioPagamento(dia) {
+            let relatorio = '';
+
+            if (dia === 15) {
+                relatorio += `📊 *Pagamentos do dia 15:*\n\n`;
+                relatorio += `🏠 Aluguel: ${document.getElementById('aluguel-valor').textContent}\n`;
+                relatorio += `📈 Investir: ${document.getElementById('investimento-dia15-valor').textContent}\n`;
+                relatorio += `💳 Fatura Nubank: ${document.getElementById('fatura-nubank-valor').textContent}\n`;
+                relatorio += `🏢 Apartamento: ${document.getElementById('apartamento-valor').textContent}\n`;
+                relatorio += `💰 Antecipação: ${document.getElementById('antecipacao-valor').textContent}\n`;
+                relatorio += `🏗️ Evolução de Obra: ${document.getElementById('evolucao-obra-valor').textContent}\n\n`;
+                relatorio += `💰 *Total*: ${document.getElementById('total-dia15').textContent}`;
+
+                lancamentos = lancamentos.filter(l => l.formaPagamento !== 'Cartão Nubank');
+            }
+
+            if (dia === 30) {
+                relatorio += `📊 *Pagamentos do dia 30:*\n\n`;
+                relatorio += `🚌 Vale Transporte: ${document.getElementById('vale-transporte-valor').textContent}\n`;
+                relatorio += `💳 Fatura Inter: ${document.getElementById('fatura-inter-valor').textContent}\n`;
+                relatorio += `💳 Fatura Sofisa: ${document.getElementById('fatura-sofisa-dia30-valor').textContent}\n`;
+                relatorio += `📈 Investir: ${document.getElementById('investimento-dia30-valor').textContent}\n\n`;
+                relatorio += `💰 *Total*: ${document.getElementById('total-dia30').textContent}`;
+
+                lancamentos = lancamentos.filter(l => l.formaPagamento !== 'Cartão Inter' && l.formaPagamento !== 'Cartão Sofisa');
+            }
+
+            localStorage.setItem('lancamentos', JSON.stringify(lancamentos));
+            atualizarTabelaLancamentos();
+            atualizarDashboard();
+            atualizarPagamentos();
+
+            navigator.clipboard.writeText(relatorio).then(() => {
+                alert('Fatura Fechada! Agora é só colar no WhatsApp 😉');
+            });
+        }
+
+        document.querySelectorAll('.tab').forEach(tab => {
+            tab.addEventListener('click', function() {
+                document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+                document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+                this.classList.add('active');
+                const tabId = this.getAttribute('data-tab');
+                document.getElementById(tabId).classList.add('active');
+            });
+        });
+
+        document.getElementById('form-lancamento').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const novoLancamento = {
+                data: document.getElementById('data').value,
+                tipo: document.getElementById('tipo').value,
+                descricao: document.getElementById('descricao').value,
+                valor: document.getElementById('valor').value,
+                categoria: document.getElementById('categoria').value,
+                formaPagamento: document.getElementById('forma-pagamento').value
+            };
+            
+            lancamentos.push(novoLancamento);
+            localStorage.setItem('lancamentos', JSON.stringify(lancamentos));
+            this.reset();
+            
+            const hoje = new Date();
+            const dataFormatada = hoje.toISOString().split('T')[0];
+            document.getElementById('data').value = dataFormatada;
+            
+            atualizarTabelaLancamentos();
+            atualizarDashboard();
+            atualizarPagamentos();
+        });
+
+        document.getElementById('form-configuracoes').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            configuracoes = {
+                salario1: parseFloat(document.getElementById('salario1').value) || 0,
+                salario2: parseFloat(document.getElementById('salario2').value) || 0,
+                aluguel: parseFloat(document.getElementById('aluguel').value) || 0,
+                valeTransporte: parseFloat(document.getElementById('vale-transporte').value) || 0,
+                apartamento: parseFloat(document.getElementById('apartamento').value) || 0,
+                antecipacao: parseFloat(document.getElementById('antecipacao').value) || 0,
+                evolucaoObra: parseFloat(document.getElementById('evolucao-obra').value) || 0,
+                gympass: parseFloat(document.getElementById('gympass').value) || 0,
+                corinthians: parseFloat(document.getElementById('corinthians').value) || 0,
+                psn: parseFloat(document.getElementById('psn').value) || 0,
+                investimentoDia15: parseFloat(document.getElementById('investimento-dia15').value) || 0,
+                investimentoDia30: parseFloat(document.getElementById('investimento-dia30').value) || 0
+            };
+            
+            localStorage.setItem('configuracoes', JSON.stringify(configuracoes));
+            alert('Configurações salvas com sucesso!');
+            atualizarDashboard();
+            atualizarPagamentos();
+        });
+
+        document.querySelectorAll('input[name="payment-date"]').forEach(radio => {
+            radio.addEventListener('change', function() {
+                const dia15 = document.getElementById('payment-dia15');
+                const dia30 = document.getElementById('payment-dia30');
+                
+                if (this.value === '15') {
+                    dia15.classList.remove('hidden');
+                    dia30.classList.add('hidden');
+                } else {
+                    dia15.classList.add('hidden');
+                    dia30.classList.remove('hidden');
+                }
+            });
+        });
+
+        document.getElementById('form-edicao').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const index = parseInt(document.getElementById('edit-index').value);
+            
+            lancamentos[index] = {
+                data: document.getElementById('edit-data').value,
+                tipo: document.getElementById('edit-tipo').value,
+                descricao: document.getElementById('edit-descricao').value,
+                valor: document.getElementById('edit-valor').value,
+                categoria: document.getElementById('edit-categoria').value,
+                formaPagamento: document.getElementById('edit-forma-pagamento').value
+            };
+            
+            localStorage.setItem('lancamentos', JSON.stringify(lancamentos));
+            modal.style.display = 'none';
+            atualizarTabelaLancamentos();
+            atualizarDashboard();
+            atualizarPagamentos();
+        });
+
+        document.getElementById('relatorio-nubank').addEventListener('click', () => gerarRelatorioPagamento(15));
+        document.getElementById('relatorio-inter').addEventListener('click', () => gerarRelatorioPagamento(30));
+document.getElementById('relatorio-nubank').addEventListener('click', () => gerarRelatorioPagamento(15));
+        document.getElementById('relatorio-inter').addEventListener('click', () => gerarRelatorioPagamento(30));
+
+        // Modal Apartamento
+        const modalApartamento = document.getElementById('editModalApartamento');
+        const closeApartamento = document.getElementById('closeApartamento');
+        
+        closeApartamento.addEventListener('click', function() {
+            modalApartamento.style.display = 'none';
+        });
+        
+        window.addEventListener('click', function(event) {
+            if (event.target == modalApartamento) {
+                modalApartamento.style.display = 'none';
+            }
+        });
+        
+// Adicionar evento para calcular parcela total automaticamente
+document.getElementById('edit-parcela-entrada').addEventListener('input', calcularParcelaTotal);
+document.getElementById('edit-evolucao-obra').addEventListener('input', calcularParcelaTotal);
+
+function calcularParcelaTotal() {
+    const parcelaEntrada = parseFloat(document.getElementById('edit-parcela-entrada').value) || 0;
+    const evolucaoObra = parseFloat(document.getElementById('edit-evolucao-obra').value) || 0;
+    const total = parcelaEntrada + evolucaoObra;
+    document.getElementById('edit-parcela-total').value = total.toFixed(2);
+}
+
+document.getElementById('form-edicao-apartamento').addEventListener('submit', function(e) {
+    e.preventDefault();
+    
+    const index = parseInt(document.getElementById('edit-index-apt').value);
+    const parcelaEntrada = parseFloat(document.getElementById('edit-parcela-entrada').value);
+    const evolucaoObra = parseFloat(document.getElementById('edit-evolucao-obra').value);
+    
+    parcelasApartamento[index] = {
+        mes: document.getElementById('edit-mes').value,
+        data: document.getElementById('edit-data-apt').value,
+        parcelaEntrada: parcelaEntrada,
+        construcao: parseFloat(document.getElementById('edit-construcao').value) || 0,
+        evolucaoObra: evolucaoObra,
+        parcelaTotal: parcelaEntrada + evolucaoObra,
+        situacao: parcelasApartamento[index].situacao
+    };
+    
+    localStorage.setItem('parcelasApartamento', JSON.stringify(parcelasApartamento));
+    modalApartamento.style.display = 'none';
+    atualizarTabelaApartamento();
+});
+document.addEventListener('DOMContentLoaded', function() {
+    const hoje = new Date();
+    const dataFormatada = hoje.toISOString().split('T')[0];
+    document.getElementById('data').value = dataFormatada;
+    carregarConfiguracoes();
+    atualizarTabelaLancamentos();
+    atualizarDashboard();
+    atualizarPagamentos();
+    atualizarTabelaApartamento();
+});
+    </script>
+</body>
+</html>
+
