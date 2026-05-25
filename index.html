@@ -847,11 +847,19 @@
                     <div class="card-content">
                         <h3><i class="fab fa-cc-mastercard"></i> Nubank</h3>
                         <div class="card-info">
-                            <span>Valor da fatura:</span>
+                            <span>Fatura (lançamentos):</span>
                             <span id="nubank-fatura">R$ 0,00</span>
                         </div>
                         <div class="card-info">
-                            <span>Limite disponível:</span>
+                            <span>Despesas fixas do ciclo:</span>
+                            <span id="nubank-despesas-fixas">R$ 0,00</span>
+                        </div>
+                        <div class="card-info">
+                            <span>Total utilizado:</span>
+                            <span id="nubank-utilizado">R$ 0,00</span>
+                        </div>
+                        <div class="card-info">
+                            <span>Saldo livre restante:</span>
                             <span id="nubank-limite">R$ 0,00</span>
                         </div>
                         <div class="card-footer">
@@ -864,11 +872,19 @@
                     <div class="card-content">
                         <h3><i class="fab fa-cc-mastercard"></i> Inter</h3>
                         <div class="card-info">
-                            <span>Valor da fatura:</span>
+                            <span>Fatura (lançamentos):</span>
                             <span id="inter-fatura">R$ 0,00</span>
                         </div>
                         <div class="card-info">
-                            <span>Limite disponível:</span>
+                            <span>Despesas fixas do ciclo:</span>
+                            <span id="inter-despesas-fixas">R$ 0,00</span>
+                        </div>
+                        <div class="card-info">
+                            <span>Total utilizado:</span>
+                            <span id="inter-utilizado">R$ 0,00</span>
+                        </div>
+                        <div class="card-info">
+                            <span>Saldo livre restante:</span>
                             <span id="inter-limite">R$ 0,00</span>
                         </div>
                         <div class="card-footer">
@@ -881,11 +897,19 @@
                     <div class="card-content">
                         <h3><i class="fab fa-cc-visa"></i> Sofisa</h3>
                         <div class="card-info">
-                            <span>Valor da fatura:</span>
+                            <span>Fatura (lançamentos):</span>
                             <span id="sofisa-fatura">R$ 0,00</span>
                         </div>
                         <div class="card-info">
-                            <span>Limite disponível:</span>
+                            <span>Despesas fixas do ciclo:</span>
+                            <span id="sofisa-despesas-fixas">R$ 0,00</span>
+                        </div>
+                        <div class="card-info">
+                            <span>Total utilizado:</span>
+                            <span id="sofisa-utilizado">R$ 0,00</span>
+                        </div>
+                        <div class="card-info">
+                            <span>Saldo livre restante:</span>
                             <span id="sofisa-limite">R$ 0,00</span>
                         </div>
                         <div class="card-footer">
@@ -1223,15 +1247,24 @@
                     </div>
                 </div>
                 
+                <div class="section-divider"></div>
+                <h3 style="font-size:1rem; color:var(--text-light); margin-bottom:0.75rem; font-weight:500;"><i class="fas fa-credit-card"></i> Saldo Livre por Cartão</h3>
+                <p style="font-size:0.85rem; color:var(--text-light); margin-bottom:1rem;">Define quanto do salário de cada ciclo você quer manter livre. O limite disponível será calculado automaticamente descontando as despesas fixas do ciclo.</p>
+
                 <div class="form-row">
                     <div class="form-group">
-                        <label for="investimento-dia15">Investimento dia 15</label>
-                        <input type="number" id="investimento-dia15" min="0" step="0.01" placeholder="0.00">
+                        <label for="saldo-livre-nubank">Saldo Livre — Nubank (Dia 15)</label>
+                        <input type="number" id="saldo-livre-nubank" min="0" step="0.01" placeholder="0.00">
                     </div>
                     
                     <div class="form-group">
-                        <label for="investimento-dia30">Investimento dia 30</label>
-                        <input type="number" id="investimento-dia30" min="0" step="0.01" placeholder="0.00">
+                        <label for="saldo-livre-inter">Saldo Livre — Inter (Dia 30)</label>
+                        <input type="number" id="saldo-livre-inter" min="0" step="0.01" placeholder="0.00">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="saldo-livre-sofisa">Saldo Livre — Sofisa (Dia 30)</label>
+                        <input type="number" id="saldo-livre-sofisa" min="0" step="0.01" placeholder="0.00">
                     </div>
                 </div>
                 
@@ -1363,8 +1396,9 @@
             gympass: 0,
             corinthians: 0,
             psn: 0,
-            investimentoDia15: 0,
-            investimentoDia30: 0
+            saldoLivreNubank: 0,
+            saldoLivreInter: 0,
+            saldoLivreSofisa: 0
         };
 let parcelasApartamento = JSON.parse(localStorage.getItem('parcelasApartamento')) || [
     { mes: "Ato", data: "2025-08-17", parcelaEntrada: 800.00, construcao: 0.000, evolucaoObra: 0.00, parcelaTotal: 800.00, situacao: "PAGO" },
@@ -1490,17 +1524,34 @@ function abrirModalEdicaoApartamento(index) {
             
             document.getElementById('nubank-fatura').textContent = formatarMoeda(faturaNubank);
             document.getElementById('inter-fatura').textContent = formatarMoeda(faturaInter);
-            document.getElementById('sofisa-fatura').textContent = formatarMoeda(faturaSofisa);
             
-            // Limite Nubank = Salário 1 - (Aluguel + Investir + Fatura Nubank + Apartamento + Antecipação + Evolução de Obra)
-            const limiteNubank = configuracoes.salario1 - ((configuracoes.aluguel || 0) + (configuracoes.investimentoDia15 || 0) + faturaNubank + (configuracoes.apartamento || 0) + (configuracoes.antecipacao || 0) + (configuracoes.evolucaoObra || 0));
+            // --- Nubank (ciclo dia 15) ---
+            // Nubank não tem despesas fixas cobradas no cartão
+            const despesasFixasNubank = 0;
+            const utilizadoNubank = faturaNubank;
+            const limiteNubank = (configuracoes.saldoLivreNubank || 0) - utilizadoNubank;
+            document.getElementById('nubank-despesas-fixas').textContent = formatarMoeda(despesasFixasNubank);
+            document.getElementById('nubank-utilizado').textContent = formatarMoeda(utilizadoNubank);
             document.getElementById('nubank-limite').textContent = formatarMoeda(limiteNubank);
-            
-            // Limite Inter = Salário 2 - (Vale Transporte + Fatura Inter + Fatura Sofisa + Investir)
-            const limiteInter = 0;
+
+            // --- Inter (ciclo dia 30) ---
+            // Inter não tem despesas fixas cobradas no cartão
+            const despesasFixasInter = 0;
+            const utilizadoInter = faturaInter;
+            const limiteInter = (configuracoes.saldoLivreInter || 0) - utilizadoInter;
+            document.getElementById('inter-despesas-fixas').textContent = formatarMoeda(despesasFixasInter);
+            document.getElementById('inter-utilizado').textContent = formatarMoeda(utilizadoInter);
             document.getElementById('inter-limite').textContent = formatarMoeda(limiteInter);
-            
-            const limiteSofisa = configuracoes.salario2 - ((configuracoes.valeTransporte || 0) + faturaInter + faturaSofisa + (configuracoes.investimentoDia30 || 0));
+
+            // --- Sofisa (ciclo dia 30) ---
+            // calcularFaturaSofisa() já soma gympass/psn/corinthians + lançamentos
+            const despesasFixasSofisa = (configuracoes.gympass || 0) + (configuracoes.psn || 0) + (configuracoes.corinthians || 0);
+            const lancamentosVariaveisSofisa = faturaSofisa - despesasFixasSofisa;
+            const utilizadoSofisa = faturaSofisa;
+            const limiteSofisa = (configuracoes.saldoLivreSofisa || 0) - utilizadoSofisa;
+            document.getElementById('sofisa-fatura').textContent = formatarMoeda(lancamentosVariaveisSofisa);
+            document.getElementById('sofisa-despesas-fixas').textContent = formatarMoeda(despesasFixasSofisa);
+            document.getElementById('sofisa-utilizado').textContent = formatarMoeda(utilizadoSofisa);
             document.getElementById('sofisa-limite').textContent = formatarMoeda(limiteSofisa);
             
             atualizarResumoFinanceiro();
@@ -1653,8 +1704,9 @@ function atualizarPagamentos() {
             document.getElementById('gympass').value = configuracoes.gympass || '';
             document.getElementById('corinthians').value = configuracoes.corinthians || '';
             document.getElementById('psn').value = configuracoes.psn || '';
-            document.getElementById('investimento-dia15').value = configuracoes.investimentoDia15 || '';
-            document.getElementById('investimento-dia30').value = configuracoes.investimentoDia30 || '';
+            document.getElementById('saldo-livre-nubank').value = configuracoes.saldoLivreNubank || '';
+            document.getElementById('saldo-livre-inter').value = configuracoes.saldoLivreInter || '';
+            document.getElementById('saldo-livre-sofisa').value = configuracoes.saldoLivreSofisa || '';
         }
 
         function atualizarResumoFinanceiro() {
@@ -1844,8 +1896,9 @@ const totalInvestimentos =
                 gympass: parseFloat(document.getElementById('gympass').value) || 0,
                 corinthians: parseFloat(document.getElementById('corinthians').value) || 0,
                 psn: parseFloat(document.getElementById('psn').value) || 0,
-                investimentoDia15: parseFloat(document.getElementById('investimento-dia15').value) || 0,
-                investimentoDia30: parseFloat(document.getElementById('investimento-dia30').value) || 0
+                saldoLivreNubank: parseFloat(document.getElementById('saldo-livre-nubank').value) || 0,
+                saldoLivreInter: parseFloat(document.getElementById('saldo-livre-inter').value) || 0,
+                saldoLivreSofisa: parseFloat(document.getElementById('saldo-livre-sofisa').value) || 0
             };
             
             localStorage.setItem('configuracoes', JSON.stringify(configuracoes));
@@ -1954,4 +2007,3 @@ document.addEventListener('DOMContentLoaded', function() {
     </script>
 </body>
 </html>
-
