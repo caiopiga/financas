@@ -655,6 +655,114 @@
             color: var(--text-dark);
         }
         
+/* ===== CONTAS FIXAS ===== */
+.contas-fixas-section {
+    margin-bottom: 2rem;
+    background: var(--bg-light);
+    border-radius: var(--border-radius);
+    padding: 1.25rem;
+    border: 1px solid var(--border-light);
+}
+.contas-fixas-section h3 {
+    font-size: 1.05rem;
+    font-weight: 600;
+    color: var(--text-dark);
+    margin-bottom: 1rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+.conta-fixa-card {
+    background: var(--bg-white);
+    border: 1px solid var(--border-light);
+    border-radius: var(--border-radius);
+    padding: 1rem 1.25rem;
+    margin-bottom: 0.75rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    flex-wrap: wrap;
+    box-shadow: var(--shadow-sm);
+    transition: var(--transition);
+}
+.conta-fixa-card:hover {
+    box-shadow: var(--shadow);
+}
+.conta-fixa-info {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    flex-wrap: wrap;
+    flex: 1;
+}
+.conta-fixa-nome {
+    font-weight: 600;
+    color: var(--text-dark);
+    min-width: 120px;
+}
+.conta-fixa-valor {
+    font-weight: 700;
+    color: var(--danger-color);
+    font-size: 1.05rem;
+    min-width: 100px;
+}
+.conta-fixa-badge {
+    display: inline-flex;
+    align-items: center;
+    padding: 0.2rem 0.6rem;
+    border-radius: 1rem;
+    font-size: 0.78rem;
+    font-weight: 600;
+    gap: 0.3rem;
+}
+.badge-prazo-fixo { background: rgba(99,102,241,0.12); color: var(--primary-color); }
+.badge-prazo-perder { background: rgba(16,185,129,0.12); color: var(--secondary-color); }
+.badge-prazo-parcelas { background: rgba(245,158,11,0.12); color: var(--warning-color); }
+.badge-pag-nubank { background: rgba(131,7,191,0.12); color: var(--nubank-color); }
+.badge-pag-inter { background: rgba(255,122,0,0.12); color: var(--inter-color); }
+.badge-pag-sofisa { background: rgba(26,26,26,0.12); color: var(--sofisa-color); }
+.badge-pag-pix { background: rgba(34,197,94,0.12); color: var(--success-color); }
+.badge-pag-boleto { background: rgba(107,114,128,0.12); color: var(--text-light); }
+.badge-variavel { background: rgba(239,68,68,0.12); color: var(--danger-color); }
+.conta-fixa-acoes { display: flex; gap: 0.5rem; }
+.form-add-conta {
+    background: var(--bg-white);
+    border: 2px dashed var(--border-light);
+    border-radius: var(--border-radius);
+    padding: 1.25rem;
+    margin-top: 1rem;
+    transition: var(--transition);
+}
+.form-add-conta:hover { border-color: var(--primary-light); }
+.btn-add-conta {
+    background: none;
+    border: 2px dashed var(--primary-light);
+    color: var(--primary-color);
+    padding: 0.6rem 1.2rem;
+    border-radius: var(--border-radius-sm);
+    cursor: pointer;
+    font-weight: 500;
+    transition: var(--transition);
+    width: 100%;
+    justify-content: center;
+    margin-top: 0.75rem;
+    box-shadow: none;
+}
+.btn-add-conta:hover { background: rgba(99,102,241,0.07); border-color: var(--primary-color); box-shadow: none; }
+.btn-cancelar { background-color: var(--text-light); }
+.btn-cancelar:hover { background-color: #4b5563; }
+.valor-variavel-input {
+    display: inline-block;
+    width: 110px;
+    padding: 0.2rem 0.4rem;
+    border: 1px solid var(--primary-light);
+    border-radius: 4px;
+    font-size: 0.9rem;
+    font-weight: 700;
+    color: var(--danger-color);
+}
+
 @media (max-width: 900px) {
     body {
         padding: 0.75rem;
@@ -972,6 +1080,82 @@
         </div>
         
         <div class="tab-content" id="lancamentos">
+
+            <!-- ===== CONTAS FIXAS ===== -->
+            <div class="contas-fixas-section">
+                <h3><i class="fas fa-receipt"></i> Contas Fixas / Monitoradas</h3>
+                <div id="lista-contas-fixas">
+                    <!-- cards gerados por JS -->
+                </div>
+                <button class="btn-add-conta" id="btn-show-form-conta" type="button">
+                    <i class="fas fa-plus"></i> Adicionar Conta
+                </button>
+                <div class="form-add-conta" id="form-add-conta-wrapper" style="display:none;">
+                    <h3 style="font-size:0.95rem; margin-bottom:1rem; color:var(--text-dark);" id="form-conta-titulo"><i class="fas fa-plus-circle"></i> Nova Conta</h3>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Nome da Conta</label>
+                            <input type="text" id="cf-nome" placeholder="Ex: Aluguel, Gympass..." required>
+                        </div>
+                        <div class="form-group">
+                            <label>Valor (R$)</label>
+                            <input type="number" id="cf-valor" step="0.01" min="0" placeholder="0.00" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Valor Variável?</label>
+                            <select id="cf-variavel">
+                                <option value="nao">Não (fixo)</option>
+                                <option value="sim">Sim (editável todo mês)</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Prazo / Vencimento</label>
+                            <select id="cf-prazo">
+                                <option value="dia15">Todo dia 15</option>
+                                <option value="dia30">Todo dia 30</option>
+                                <option value="perder">A perder de vista (sem prazo)</option>
+                                <option value="parcelas">Parcelado</option>
+                                <option value="personalizado">Data específica</option>
+                            </select>
+                        </div>
+                        <div class="form-group" id="cf-parcelas-group" style="display:none;">
+                            <label>Nº de Parcelas restantes</label>
+                            <input type="number" id="cf-parcelas" min="1" placeholder="Ex: 12">
+                        </div>
+                        <div class="form-group" id="cf-data-group" style="display:none;">
+                            <label>Data de Vencimento</label>
+                            <input type="date" id="cf-data-venc">
+                        </div>
+                        <div class="form-group">
+                            <label>Forma de Pagamento</label>
+                            <select id="cf-pagamento">
+                                <option value="Cartão Nubank">Cartão Nubank</option>
+                                <option value="Cartão Inter">Cartão Inter</option>
+                                <option value="Cartão Sofisa">Cartão Sofisa</option>
+                                <option value="PIX">PIX</option>
+                                <option value="Boleto">Boleto</option>
+                                <option value="Débito Automático">Débito Automático</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Ciclo (afeta qual fatura)</label>
+                            <select id="cf-ciclo">
+                                <option value="dia15">Dia 15 (Nubank)</option>
+                                <option value="dia30">Dia 30 (Inter / Sofisa)</option>
+                            </select>
+                        </div>
+                    </div>
+                    <input type="hidden" id="cf-edit-index" value="-1">
+                    <div style="display:flex; gap:0.75rem; flex-wrap:wrap;">
+                        <button type="button" id="btn-salvar-conta"><i class="fas fa-save"></i> Salvar Conta</button>
+                        <button type="button" class="btn-cancelar" id="btn-cancelar-conta"><i class="fas fa-times"></i> Cancelar</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="section-divider"></div>
             <h2><i class="fas fa-plus-circle"></i> Novo Lançamento</h2>
             <form id="form-lancamento">
                 <div class="form-row">
@@ -1016,6 +1200,9 @@
                             <option value="Cartão Nubank">Cartão Nubank</option>
                             <option value="Cartão Inter">Cartão Inter</option>
                             <option value="Cartão Sofisa">Cartão Sofisa</option>
+                            <option value="PIX">PIX</option>
+                            <option value="Boleto">Boleto</option>
+                            <option value="Débito Automático">Débito Automático</option>
                         </select>
                     </div>
                     
@@ -1058,32 +1245,19 @@
             </div>
             
             <div id="payment-dia15" class="payment-details">
-                <div class="payment-item">
-                    <span>Aluguel:</span>
-                    <span id="aluguel-valor">R$ 0,00</span>
-                </div>
-                <div class="payment-item">
-                    <span>Investir:</span>
-                    <span id="investimento-dia15-valor">R$ 0,00</span>
+                <div id="payment-dia15-items">
+                    <!-- gerado dinamicamente pelas contas fixas -->
                 </div>
                 <div class="payment-item">
                     <span>Fatura Nubank:</span>
                     <span id="fatura-nubank-valor">R$ 0,00</span>
                 </div>
                 <div class="payment-item">
-                    <span>Apartamento:</span>
-                    <span id="apartamento-valor">R$ 0,00</span>
+                    <span>Investir:</span>
+                    <span id="investimento-dia15-valor">R$ 0,00</span>
                 </div>
                 <div class="payment-item">
-                    <span>Antecipação:</span>
-                    <span id="antecipacao-valor">R$ 0,00</span>
-                </div>
-                <div class="payment-item">
-                    <span>Evolução de Obra:</span>
-                    <span id="evolucao-obra-valor">R$ 0,00</span>
-                </div>
-                <div class="payment-item">
-                    <span>Total:</span>
+                    <span><strong>Total:</strong></span>
                     <span id="total-dia15">R$ 0,00</span>
                 </div>
                 <div style="display: flex; gap: 1rem; flex-wrap: wrap; margin-top: 1.25rem;">
@@ -1094,9 +1268,8 @@
             </div>
             
             <div id="payment-dia30" class="payment-details hidden">
-                <div class="payment-item">
-                    <span>Vale Transporte:</span>
-                    <span id="vale-transporte-valor">R$ 0,00</span>
+                <div id="payment-dia30-items">
+                    <!-- gerado dinamicamente pelas contas fixas -->
                 </div>
                 <div class="payment-item">
                     <span>Fatura Inter:</span>
@@ -1111,7 +1284,7 @@
                     <span id="investimento-dia30-valor">R$ 0,00</span>
                 </div>
                 <div class="payment-item">
-                    <span>Total:</span>
+                    <span><strong>Total:</strong></span>
                     <span id="total-dia30">R$ 0,00</span>
                 </div>
                 <div style="display: flex; gap: 1rem; flex-wrap: wrap; margin-top: 1.25rem;">
@@ -1199,54 +1372,6 @@
                     </div>
                 </div>
                 
-                <div class="form-row">
-                    <div class="form-group">
-                        <label for="aluguel">Aluguel</label>
-                        <input type="number" id="aluguel" min="0" step="0.01" placeholder="0.00">
-                    </div>
-                    
-                    <div class="form-group">
-                        <label for="vale-transporte">Vale Transporte</label>
-                        <input type="number" id="vale-transporte" min="0" step="0.01" placeholder="0.00">
-                    </div>
-                </div>
-                
-                <div class="form-row">
-                    <div class="form-group">
-                        <label for="apartamento">Apartamento</label>
-                        <input type="number" id="apartamento" min="0" step="0.01" placeholder="0.00">
-                    </div>
-                    
-                    <div class="form-group">
-                        <label for="antecipacao">Antecipação</label>
-                        <input type="number" id="antecipacao" min="0" step="0.01" placeholder="0.00">
-                    </div>
-                </div>
-                
-                <div class="form-row">
-                    <div class="form-group">
-                        <label for="evolucao-obra">Evolução de Obra</label>
-                        <input type="number" id="evolucao-obra" min="0" step="0.01" placeholder="0.00">
-                    </div>
-                    
-                    <div class="form-group">
-                        <label for="gympass">Gympass</label>
-                        <input type="number" id="gympass" min="0" step="0.01" placeholder="0.00">
-                    </div>
-                </div>
-                
-                <div class="form-row">
-                    <div class="form-group">
-                        <label for="corinthians">Corinthians</label>
-                        <input type="number" id="corinthians" min="0" step="0.01" placeholder="0.00">
-                    </div>
-                    
-                    <div class="form-group">
-                        <label for="psn">PSN</label>
-                        <input type="number" id="psn" min="0" step="0.01" placeholder="0.00">
-                    </div>
-                </div>
-                
                 <div class="section-divider"></div>
                 <h3 style="font-size:1rem; color:var(--text-light); margin-bottom:0.75rem; font-weight:500;"><i class="fas fa-credit-card"></i> Saldo Livre por Cartão</h3>
                 <p style="font-size:0.85rem; color:var(--text-light); margin-bottom:1rem;">Define quanto do salário de cada ciclo você quer manter livre. O limite disponível será calculado automaticamente descontando as despesas fixas do ciclo.</p>
@@ -1320,6 +1445,9 @@
                             <option value="Cartão Nubank">Cartão Nubank</option>
                             <option value="Cartão Inter">Cartão Inter</option>
                             <option value="Cartão Sofisa">Cartão Sofisa</option>
+                            <option value="PIX">PIX</option>
+                            <option value="Boleto">Boleto</option>
+                            <option value="Débito Automático">Débito Automático</option>
                         </select>
                     </div>
                     
@@ -1388,18 +1516,11 @@
         let configuracoes = JSON.parse(localStorage.getItem('configuracoes')) || {
             salario1: 0,
             salario2: 0,
-            aluguel: 0,
-            valeTransporte: 0,
-            apartamento: 0,
-            antecipacao: 0,
-            evolucaoObra: 0,
-            gympass: 0,
-            corinthians: 0,
-            psn: 0,
             saldoLivreNubank: 0,
             saldoLivreInter: 0,
             saldoLivreSofisa: 0
         };
+        let contasFixas = JSON.parse(localStorage.getItem('contasFixas')) || [];
 let parcelasApartamento = JSON.parse(localStorage.getItem('parcelasApartamento')) || [
     { mes: "Ato", data: "2025-08-17", parcelaEntrada: 800.00, construcao: 0.000, evolucaoObra: 0.00, parcelaTotal: 800.00, situacao: "PAGO" },
     { mes: "1", data: "2025-09-15", parcelaEntrada: 706.37, construcao: 0.000, evolucaoObra: 442.43, parcelaTotal: 1148.80, situacao: "PAGO" },
@@ -1518,69 +1639,77 @@ function abrirModalEdicaoApartamento(index) {
         }
 
         function atualizarDashboard() {
-            const faturaNubank = calcularFaturaNubank();
-            const faturaInter = calcularFaturaInter();
+            const fixasNubank = somaContasFixasCartao('Cartão Nubank');
+            const fixasInter = somaContasFixasCartao('Cartão Inter');
+            const fixasSofisa = somaContasFixasCartao('Cartão Sofisa');
+
+            const faturaNubank = calcularFaturaNubank() + fixasNubank;
+            const faturaInter = calcularFaturaInter() + fixasInter;
             const faturaSofisa = calcularFaturaSofisa();
-            
-            document.getElementById('nubank-fatura').textContent = formatarMoeda(faturaNubank);
-            document.getElementById('inter-fatura').textContent = formatarMoeda(faturaInter);
-            
-            // --- Nubank (ciclo dia 15) ---
-            // Nubank não tem despesas fixas cobradas no cartão
-            const despesasFixasNubank = 0;
-            const utilizadoNubank = faturaNubank;
-            const limiteNubank = (configuracoes.saldoLivreNubank || 0) - utilizadoNubank;
-            document.getElementById('nubank-despesas-fixas').textContent = formatarMoeda(despesasFixasNubank);
-            document.getElementById('nubank-utilizado').textContent = formatarMoeda(utilizadoNubank);
+
+            const lancamentosNubank = calcularFaturaNubank();
+            const lancamentosInter = calcularFaturaInter();
+            const lancamentosSofisa = calcularFaturaSofisa() - fixasSofisa;
+
+            document.getElementById('nubank-fatura').textContent = formatarMoeda(lancamentosNubank);
+            document.getElementById('inter-fatura').textContent = formatarMoeda(lancamentosInter);
+
+            // Nubank
+            const limiteNubank = (configuracoes.saldoLivreNubank || 0) - faturaNubank;
+            document.getElementById('nubank-despesas-fixas').textContent = formatarMoeda(fixasNubank);
+            document.getElementById('nubank-utilizado').textContent = formatarMoeda(faturaNubank);
             document.getElementById('nubank-limite').textContent = formatarMoeda(limiteNubank);
 
-            // --- Inter (ciclo dia 30) ---
-            // Inter não tem despesas fixas cobradas no cartão
-            const despesasFixasInter = 0;
-            const utilizadoInter = faturaInter;
-            const limiteInter = (configuracoes.saldoLivreInter || 0) - utilizadoInter;
-            document.getElementById('inter-despesas-fixas').textContent = formatarMoeda(despesasFixasInter);
-            document.getElementById('inter-utilizado').textContent = formatarMoeda(utilizadoInter);
+            // Inter
+            const limiteInter = (configuracoes.saldoLivreInter || 0) - faturaInter;
+            document.getElementById('inter-despesas-fixas').textContent = formatarMoeda(fixasInter);
+            document.getElementById('inter-utilizado').textContent = formatarMoeda(faturaInter);
             document.getElementById('inter-limite').textContent = formatarMoeda(limiteInter);
 
-            // --- Sofisa (ciclo dia 30) ---
-            // calcularFaturaSofisa() já soma gympass/psn/corinthians + lançamentos
-            const despesasFixasSofisa = (configuracoes.gympass || 0) + (configuracoes.psn || 0) + (configuracoes.corinthians || 0);
-            const lancamentosVariaveisSofisa = faturaSofisa - despesasFixasSofisa;
-            const utilizadoSofisa = faturaSofisa;
-            const limiteSofisa = (configuracoes.saldoLivreSofisa || 0) - utilizadoSofisa;
-            document.getElementById('sofisa-fatura').textContent = formatarMoeda(lancamentosVariaveisSofisa);
-            document.getElementById('sofisa-despesas-fixas').textContent = formatarMoeda(despesasFixasSofisa);
-            document.getElementById('sofisa-utilizado').textContent = formatarMoeda(utilizadoSofisa);
+            // Sofisa
+            const limiteSofisa = (configuracoes.saldoLivreSofisa || 0) - faturaSofisa;
+            document.getElementById('sofisa-fatura').textContent = formatarMoeda(lancamentosSofisa);
+            document.getElementById('sofisa-despesas-fixas').textContent = formatarMoeda(fixasSofisa);
+            document.getElementById('sofisa-utilizado').textContent = formatarMoeda(faturaSofisa);
             document.getElementById('sofisa-limite').textContent = formatarMoeda(limiteSofisa);
-            
+
             atualizarResumoFinanceiro();
         }
 
         function calcularFaturaNubank() {
             return lancamentos
-                .filter(lancamento => lancamento.formaPagamento === 'Cartão Nubank')
-                .reduce((total, lancamento) => total + parseFloat(lancamento.valor), 0);
+                .filter(l => l.formaPagamento === 'Cartão Nubank')
+                .reduce((t, l) => t + parseFloat(l.valor), 0);
         }
 
         function calcularFaturaInter() {
-            const valorLancamentos = lancamentos
-                .filter(lancamento => lancamento.formaPagamento === 'Cartão Inter')
-                .reduce((total, lancamento) => total + parseFloat(lancamento.valor), 0);
-            
-const valoresFixos = 0;            
-            return valorLancamentos + valoresFixos;
+            return lancamentos
+                .filter(l => l.formaPagamento === 'Cartão Inter')
+                .reduce((t, l) => t + parseFloat(l.valor), 0);
         }
 
         function calcularFaturaSofisa() {
-            const valorLancamentos = lancamentos
-                .filter(lancamento => lancamento.formaPagamento === 'Cartão Sofisa')
-                .reduce((total, lancamento) => total + parseFloat(lancamento.valor), 0);
-            
-const valoresFixos = parseFloat(configuracoes.corinthians || 0) +
-                     parseFloat(configuracoes.psn || 0) +
-                     parseFloat(configuracoes.gympass || 0);            
-            return valorLancamentos + valoresFixos;
+            const lancamentosSofisa = lancamentos
+                .filter(l => l.formaPagamento === 'Cartão Sofisa')
+                .reduce((t, l) => t + parseFloat(l.valor), 0);
+            const fixasSofisa = contasFixas
+                .filter(c => c.pagamento === 'Cartão Sofisa')
+                .reduce((t, c) => t + parseFloat(c.valor), 0);
+            return lancamentosSofisa + fixasSofisa;
+        }
+
+        // Soma contas fixas de um ciclo (excluindo cartões que já entram na fatura)
+        function somaContasFixasCiclo(ciclo, excluirCartoes) {
+            return contasFixas
+                .filter(c => c.ciclo === ciclo && (!excluirCartoes || !['Cartão Nubank','Cartão Inter','Cartão Sofisa'].includes(c.pagamento)))
+                .reduce((t, c) => t + parseFloat(c.valor), 0);
+        }
+
+        // Soma contas fixas do ciclo que são do cartão especificado (entram na fatura)
+        function somaContasFixasCartao(cartao) {
+            return contasFixas
+                .filter(c => c.pagamento === cartao)
+                .reduce((t, c) => t + parseFloat(c.valor), 0);
         }
 
         function atualizarTabelaLancamentos() {
@@ -1654,56 +1783,57 @@ const valoresFixos = parseFloat(configuracoes.corinthians || 0) +
         });
 
 function atualizarPagamentos() {
-    const faturaNubank = calcularFaturaNubank();
-    const faturaInter = calcularFaturaInter();
+    const faturaNubank = calcularFaturaNubank() + somaContasFixasCartao('Cartão Nubank');
+    const faturaInter = calcularFaturaInter() + somaContasFixasCartao('Cartão Inter');
     const faturaSofisa = calcularFaturaSofisa();
 
+    // Contas fixas dia 15 (excluindo as que são cartão, pois entram na fatura)
+    const fixasDia15SemCartao = somaContasFixasCiclo('dia15', true);
+    const fixasDia30SemCartao = somaContasFixasCiclo('dia30', true);
+
     /* ===== DIA 15 ===== */
-    const despesasDia15 =
-        (parseFloat(configuracoes.aluguel) || 0) +
-        faturaNubank +
-        (parseFloat(configuracoes.apartamento) || 0) +
-        (parseFloat(configuracoes.antecipacao) || 0) +
-        (parseFloat(configuracoes.evolucaoObra) || 0);
+    const despesasDia15 = fixasDia15SemCartao + faturaNubank;
+    const investimentoDia15 = (parseFloat(configuracoes.salario1) || 0) - despesasDia15;
 
-    const investimentoDia15 =
-        (parseFloat(configuracoes.salario1) || 0) - despesasDia15;
+    // Renderiza itens dinâmicos dia 15
+    const items15 = document.getElementById('payment-dia15-items');
+    items15.innerHTML = '';
+    contasFixas.filter(c => c.ciclo === 'dia15').forEach(c => {
+        const div = document.createElement('div');
+        div.className = 'payment-item';
+        div.innerHTML = `<span>${c.nome}${c.pagamento ? ' <small style="color:var(--text-light);">(${c.pagamento})</small>' : ''}:</span>
+            <span>${formatarMoeda(parseFloat(c.valor))}</span>`;
+        items15.appendChild(div);
+    });
 
-    document.getElementById('aluguel-valor').textContent = formatarMoeda(configuracoes.aluguel || 0);
     document.getElementById('fatura-nubank-valor').textContent = formatarMoeda(faturaNubank);
-    document.getElementById('apartamento-valor').textContent = formatarMoeda(configuracoes.apartamento || 0);
-    document.getElementById('antecipacao-valor').textContent = formatarMoeda(configuracoes.antecipacao || 0);
-    document.getElementById('evolucao-obra-valor').textContent = formatarMoeda(configuracoes.evolucaoObra || 0);
-    document.getElementById('investimento-dia15-valor').textContent = formatarMoeda(investimentoDia15);
-    document.getElementById('total-dia15').textContent = formatarMoeda(configuracoes.salario1 || 0);
+    document.getElementById('investimento-dia15-valor').textContent = formatarMoeda(Math.max(0, investimentoDia15));
+    document.getElementById('total-dia15').textContent = formatarMoeda(parseFloat(configuracoes.salario1) || 0);
 
     /* ===== DIA 30 ===== */
-    const despesasDia30 =
-        (parseFloat(configuracoes.valeTransporte) || 0) +
-        faturaInter +
-        faturaSofisa;
+    const despesasDia30 = fixasDia30SemCartao + faturaInter + faturaSofisa;
+    const investimentoDia30 = (parseFloat(configuracoes.salario2) || 0) - despesasDia30;
 
-    const investimentoDia30 =
-        (parseFloat(configuracoes.salario2) || 0) - despesasDia30;
+    // Renderiza itens dinâmicos dia 30
+    const items30 = document.getElementById('payment-dia30-items');
+    items30.innerHTML = '';
+    contasFixas.filter(c => c.ciclo === 'dia30').forEach(c => {
+        const div = document.createElement('div');
+        div.className = 'payment-item';
+        div.innerHTML = `<span>${c.nome}${c.pagamento ? ' <small style="color:var(--text-light);">(${c.pagamento})</small>' : ''}:</span>
+            <span>${formatarMoeda(parseFloat(c.valor))}</span>`;
+        items30.appendChild(div);
+    });
 
-    document.getElementById('vale-transporte-valor').textContent = formatarMoeda(configuracoes.valeTransporte || 0);
     document.getElementById('fatura-inter-valor').textContent = formatarMoeda(faturaInter);
     document.getElementById('fatura-sofisa-dia30-valor').textContent = formatarMoeda(faturaSofisa);
-    document.getElementById('investimento-dia30-valor').textContent = formatarMoeda(investimentoDia30);
-    document.getElementById('total-dia30').textContent = formatarMoeda(configuracoes.salario2 || 0);
+    document.getElementById('investimento-dia30-valor').textContent = formatarMoeda(Math.max(0, investimentoDia30));
+    document.getElementById('total-dia30').textContent = formatarMoeda(parseFloat(configuracoes.salario2) || 0);
 }
 
         function carregarConfiguracoes() {
             document.getElementById('salario1').value = configuracoes.salario1 || '';
             document.getElementById('salario2').value = configuracoes.salario2 || '';
-            document.getElementById('aluguel').value = configuracoes.aluguel || '';
-            document.getElementById('vale-transporte').value = configuracoes.valeTransporte || '';
-            document.getElementById('apartamento').value = configuracoes.apartamento || '';
-            document.getElementById('antecipacao').value = configuracoes.antecipacao || '';
-            document.getElementById('evolucao-obra').value = configuracoes.evolucaoObra || '';
-            document.getElementById('gympass').value = configuracoes.gympass || '';
-            document.getElementById('corinthians').value = configuracoes.corinthians || '';
-            document.getElementById('psn').value = configuracoes.psn || '';
             document.getElementById('saldo-livre-nubank').value = configuracoes.saldoLivreNubank || '';
             document.getElementById('saldo-livre-inter').value = configuracoes.saldoLivreInter || '';
             document.getElementById('saldo-livre-sofisa').value = configuracoes.saldoLivreSofisa || '';
@@ -1711,41 +1841,35 @@ function atualizarPagamentos() {
 
         function atualizarResumoFinanceiro() {
             const totalEntradas = (parseFloat(configuracoes.salario1) || 0) + (parseFloat(configuracoes.salario2) || 0);
-const despesasDia15 =
-    (parseFloat(configuracoes.aluguel) || 0) +
-    calcularFaturaNubank() +
-    (parseFloat(configuracoes.apartamento) || 0) +
-    (parseFloat(configuracoes.antecipacao) || 0) +
-    (parseFloat(configuracoes.evolucaoObra) || 0);
 
-const despesasDia30 =
-    (parseFloat(configuracoes.valeTransporte) || 0) +
-    calcularFaturaInter() +
-    calcularFaturaSofisa();
+            const faturaNubank = calcularFaturaNubank() + somaContasFixasCartao('Cartão Nubank');
+            const faturaInter = calcularFaturaInter() + somaContasFixasCartao('Cartão Inter');
+            const faturaSofisa = calcularFaturaSofisa();
 
-const totalInvestimentos =
-    ((configuracoes.salario1 || 0) - despesasDia15) +
-    ((configuracoes.salario2 || 0) - despesasDia30);
-            const despesasFixas = (parseFloat(configuracoes.aluguel) || 0) + 
-                                 (parseFloat(configuracoes.apartamento) || 0) + 
-                                 (parseFloat(configuracoes.antecipacao) || 0) + 
-                                 (parseFloat(configuracoes.evolucaoObra) || 0) + 
-                                 (parseFloat(configuracoes.valeTransporte) || 0) + 
-                                 (parseFloat(configuracoes.corinthians) || 0) + 
-                                 (parseFloat(configuracoes.psn) || 0) + 
-                                 (parseFloat(configuracoes.gympass) || 0);
-            
-            const saldo = totalEntradas - despesasFixas - totalInvestimentos;
-            
+            const despesasDia15 = somaContasFixasCiclo('dia15', true) + faturaNubank;
+            const despesasDia30 = somaContasFixasCiclo('dia30', true) + faturaInter + faturaSofisa;
+
+            const totalInvestimentos =
+                Math.max(0, (configuracoes.salario1 || 0) - despesasDia15) +
+                Math.max(0, (configuracoes.salario2 || 0) - despesasDia30);
+
+            const totalContasFixas = contasFixas.reduce((t, c) => t + parseFloat(c.valor), 0);
+            const despesasFixas = totalContasFixas + faturaNubank + faturaInter + faturaSofisa
+                - somaContasFixasCartao('Cartão Nubank')
+                - somaContasFixasCartao('Cartão Inter')
+                - somaContasFixasCartao('Cartão Sofisa'); // evitar double count
+
+            const saldo = totalEntradas - despesasDia15 - despesasDia30;
+
             document.getElementById('total-entradas').textContent = formatarMoeda(totalEntradas);
-            document.getElementById('total-despesas').textContent = formatarMoeda(despesasFixas);
+            document.getElementById('total-despesas').textContent = formatarMoeda(despesasDia15 + despesasDia30);
             document.getElementById('total-investimentos').textContent = formatarMoeda(totalInvestimentos);
-            
+
             const saldoElement = document.getElementById('saldo-mensal');
             saldoElement.textContent = formatarMoeda(Math.abs(saldo));
             saldoElement.className = saldo >= 0 ? 'resumo-value valor-positivo' : 'resumo-value valor-negativo';
-            
-            atualizarGraficoBalanco(totalEntradas, despesasFixas, totalInvestimentos, saldo);
+
+            atualizarGraficoBalanco(totalEntradas, despesasDia15 + despesasDia30, totalInvestimentos, saldo);
         }
 
         function atualizarGraficoBalanco(entradas, despesas, investimentos, saldo) {
@@ -1812,28 +1936,28 @@ const totalInvestimentos =
 
         function gerarRelatorioPagamento(dia) {
             let relatorio = '';
+            const ciclo = dia === 15 ? 'dia15' : 'dia30';
 
             if (dia === 15) {
                 relatorio += `📊 *Pagamentos do dia 15:*\n\n`;
-                relatorio += `🏠 Aluguel: ${document.getElementById('aluguel-valor').textContent}\n`;
-                relatorio += `📈 Investir: ${document.getElementById('investimento-dia15-valor').textContent}\n`;
+                contasFixas.filter(c => c.ciclo === 'dia15').forEach(c => {
+                    relatorio += `• ${c.nome}: ${formatarMoeda(parseFloat(c.valor))}\n`;
+                });
                 relatorio += `💳 Fatura Nubank: ${document.getElementById('fatura-nubank-valor').textContent}\n`;
-                relatorio += `🏢 Apartamento: ${document.getElementById('apartamento-valor').textContent}\n`;
-                relatorio += `💰 Antecipação: ${document.getElementById('antecipacao-valor').textContent}\n`;
-                relatorio += `🏗️ Evolução de Obra: ${document.getElementById('evolucao-obra-valor').textContent}\n\n`;
+                relatorio += `📈 Investir: ${document.getElementById('investimento-dia15-valor').textContent}\n\n`;
                 relatorio += `💰 *Total*: ${document.getElementById('total-dia15').textContent}`;
-
                 lancamentos = lancamentos.filter(l => l.formaPagamento !== 'Cartão Nubank');
             }
 
             if (dia === 30) {
                 relatorio += `📊 *Pagamentos do dia 30:*\n\n`;
-                relatorio += `🚌 Vale Transporte: ${document.getElementById('vale-transporte-valor').textContent}\n`;
+                contasFixas.filter(c => c.ciclo === 'dia30').forEach(c => {
+                    relatorio += `• ${c.nome}: ${formatarMoeda(parseFloat(c.valor))}\n`;
+                });
                 relatorio += `💳 Fatura Inter: ${document.getElementById('fatura-inter-valor').textContent}\n`;
                 relatorio += `💳 Fatura Sofisa: ${document.getElementById('fatura-sofisa-dia30-valor').textContent}\n`;
                 relatorio += `📈 Investir: ${document.getElementById('investimento-dia30-valor').textContent}\n\n`;
                 relatorio += `💰 *Total*: ${document.getElementById('total-dia30').textContent}`;
-
                 lancamentos = lancamentos.filter(l => l.formaPagamento !== 'Cartão Inter' && l.formaPagamento !== 'Cartão Sofisa');
             }
 
@@ -1888,14 +2012,6 @@ const totalInvestimentos =
             configuracoes = {
                 salario1: parseFloat(document.getElementById('salario1').value) || 0,
                 salario2: parseFloat(document.getElementById('salario2').value) || 0,
-                aluguel: parseFloat(document.getElementById('aluguel').value) || 0,
-                valeTransporte: parseFloat(document.getElementById('vale-transporte').value) || 0,
-                apartamento: parseFloat(document.getElementById('apartamento').value) || 0,
-                antecipacao: parseFloat(document.getElementById('antecipacao').value) || 0,
-                evolucaoObra: parseFloat(document.getElementById('evolucao-obra').value) || 0,
-                gympass: parseFloat(document.getElementById('gympass').value) || 0,
-                corinthians: parseFloat(document.getElementById('corinthians').value) || 0,
-                psn: parseFloat(document.getElementById('psn').value) || 0,
                 saldoLivreNubank: parseFloat(document.getElementById('saldo-livre-nubank').value) || 0,
                 saldoLivreInter: parseFloat(document.getElementById('saldo-livre-inter').value) || 0,
                 saldoLivreSofisa: parseFloat(document.getElementById('saldo-livre-sofisa').value) || 0
@@ -1994,11 +2110,143 @@ document.getElementById('form-edicao-apartamento').addEventListener('submit', fu
     modalApartamento.style.display = 'none';
     atualizarTabelaApartamento();
 });
+
+        // ===== CONTAS FIXAS =====
+        function prazoLabel(conta) {
+            const map = { dia15: 'Todo dia 15', dia30: 'Todo dia 30', perder: 'A perder de vista', parcelas: `${conta.parcelas || '?'} parcelas`, personalizado: conta.dataVenc || '' };
+            return map[conta.prazo] || conta.prazo;
+        }
+        function prazoBadgeClass(prazo) {
+            if (prazo === 'perder') return 'badge-prazo-perder';
+            if (prazo === 'parcelas') return 'badge-prazo-parcelas';
+            return 'badge-prazo-fixo';
+        }
+        function pagBadgeClass(pag) {
+            if (pag === 'Cartão Nubank') return 'badge-pag-nubank';
+            if (pag === 'Cartão Inter') return 'badge-pag-inter';
+            if (pag === 'Cartão Sofisa') return 'badge-pag-sofisa';
+            if (pag === 'PIX') return 'badge-pag-pix';
+            return 'badge-pag-boleto';
+        }
+
+        function renderContasFixas() {
+            const lista = document.getElementById('lista-contas-fixas');
+            lista.innerHTML = '';
+            if (contasFixas.length === 0) {
+                lista.innerHTML = '<p style="color:var(--text-light); font-size:0.9rem; padding:0.5rem 0;">Nenhuma conta cadastrada ainda.</p>';
+                return;
+            }
+            contasFixas.forEach((c, i) => {
+                const div = document.createElement('div');
+                div.className = 'conta-fixa-card';
+                div.innerHTML = `
+                    <div class="conta-fixa-info">
+                        <span class="conta-fixa-nome">${c.nome}</span>
+                        ${c.variavel === 'sim'
+                            ? `<input type="number" class="valor-variavel-input" value="${parseFloat(c.valor).toFixed(2)}" step="0.01" min="0"
+                                onchange="atualizarValorContaFixa(${i}, this.value)" title="Valor variável — edite aqui">`
+                            : `<span class="conta-fixa-valor">${formatarMoeda(parseFloat(c.valor))}</span>`}
+                        <span class="conta-fixa-badge ${prazoBadgeClass(c.prazo)}"><i class="fas fa-calendar-alt"></i> ${prazoLabel(c)}</span>
+                        <span class="conta-fixa-badge ${pagBadgeClass(c.pagamento)}">${c.pagamento}</span>
+                        ${c.variavel === 'sim' ? '<span class="conta-fixa-badge badge-variavel"><i class="fas fa-edit"></i> Variável</span>' : ''}
+                        <span class="conta-fixa-badge" style="background:rgba(99,102,241,0.08);color:var(--primary-color);">${c.ciclo === 'dia15' ? 'Dia 15' : 'Dia 30'}</span>
+                    </div>
+                    <div class="conta-fixa-acoes">
+                        <button class="action-btn edit-btn" title="Editar" onclick="editarContaFixa(${i})">✎</button>
+                        <button class="action-btn delete-btn" title="Excluir" onclick="excluirContaFixa(${i})">×</button>
+                    </div>
+                `;
+                lista.appendChild(div);
+            });
+        }
+
+        function atualizarValorContaFixa(index, novoValor) {
+            contasFixas[index].valor = parseFloat(novoValor) || 0;
+            localStorage.setItem('contasFixas', JSON.stringify(contasFixas));
+            atualizarDashboard();
+            atualizarPagamentos();
+        }
+
+        function excluirContaFixa(index) {
+            if (!confirm(`Excluir "${contasFixas[index].nome}"?`)) return;
+            contasFixas.splice(index, 1);
+            localStorage.setItem('contasFixas', JSON.stringify(contasFixas));
+            renderContasFixas();
+            atualizarDashboard();
+            atualizarPagamentos();
+        }
+
+        function editarContaFixa(index) {
+            const c = contasFixas[index];
+            document.getElementById('cf-nome').value = c.nome;
+            document.getElementById('cf-valor').value = c.valor;
+            document.getElementById('cf-variavel').value = c.variavel || 'nao';
+            document.getElementById('cf-prazo').value = c.prazo;
+            document.getElementById('cf-pagamento').value = c.pagamento;
+            document.getElementById('cf-ciclo').value = c.ciclo;
+            document.getElementById('cf-parcelas').value = c.parcelas || '';
+            document.getElementById('cf-data-venc').value = c.dataVenc || '';
+            document.getElementById('cf-edit-index').value = index;
+            document.getElementById('form-conta-titulo').innerHTML = '<i class="fas fa-edit"></i> Editar Conta';
+            document.getElementById('form-add-conta-wrapper').style.display = 'block';
+            document.getElementById('btn-show-form-conta').style.display = 'none';
+            atualizarVisibilidadePrazo();
+        }
+
+        function atualizarVisibilidadePrazo() {
+            const prazo = document.getElementById('cf-prazo').value;
+            document.getElementById('cf-parcelas-group').style.display = prazo === 'parcelas' ? '' : 'none';
+            document.getElementById('cf-data-group').style.display = prazo === 'personalizado' ? '' : 'none';
+        }
+
+        document.getElementById('cf-prazo').addEventListener('change', atualizarVisibilidadePrazo);
+
+        document.getElementById('btn-show-form-conta').addEventListener('click', () => {
+            document.getElementById('cf-edit-index').value = -1;
+            document.getElementById('form-conta-titulo').innerHTML = '<i class="fas fa-plus-circle"></i> Nova Conta';
+            document.getElementById('form-add-conta-wrapper').style.display = 'block';
+            document.getElementById('btn-show-form-conta').style.display = 'none';
+        });
+
+        document.getElementById('btn-cancelar-conta').addEventListener('click', () => {
+            document.getElementById('form-add-conta-wrapper').style.display = 'none';
+            document.getElementById('btn-show-form-conta').style.display = '';
+        });
+
+        document.getElementById('btn-salvar-conta').addEventListener('click', () => {
+            const nome = document.getElementById('cf-nome').value.trim();
+            const valor = parseFloat(document.getElementById('cf-valor').value) || 0;
+            if (!nome || valor <= 0) { alert('Preencha nome e valor.'); return; }
+            const conta = {
+                nome,
+                valor,
+                variavel: document.getElementById('cf-variavel').value,
+                prazo: document.getElementById('cf-prazo').value,
+                pagamento: document.getElementById('cf-pagamento').value,
+                ciclo: document.getElementById('cf-ciclo').value,
+                parcelas: document.getElementById('cf-parcelas').value || null,
+                dataVenc: document.getElementById('cf-data-venc').value || null
+            };
+            const editIndex = parseInt(document.getElementById('cf-edit-index').value);
+            if (editIndex >= 0) {
+                contasFixas[editIndex] = conta;
+            } else {
+                contasFixas.push(conta);
+            }
+            localStorage.setItem('contasFixas', JSON.stringify(contasFixas));
+            document.getElementById('form-add-conta-wrapper').style.display = 'none';
+            document.getElementById('btn-show-form-conta').style.display = '';
+            renderContasFixas();
+            atualizarDashboard();
+            atualizarPagamentos();
+        });
+
 document.addEventListener('DOMContentLoaded', function() {
     const hoje = new Date();
     const dataFormatada = hoje.toISOString().split('T')[0];
     document.getElementById('data').value = dataFormatada;
     carregarConfiguracoes();
+    renderContasFixas();
     atualizarTabelaLancamentos();
     atualizarDashboard();
     atualizarPagamentos();
