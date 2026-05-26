@@ -1242,5 +1242,41 @@ document.addEventListener('DOMContentLoaded', function() {
     atualizarTabelaApartamento();
 });
 </script>
+<script type="module">
+
+import { initializeApp }
+from "https://www.gstatic.com/firebasejs/12.13.0/firebase-app.js";
+
+import {
+  getFirestore,
+  collection,
+  addDoc,
+  getDocs
+}
+from "https://www.gstatic.com/firebasejs/12.13.0/firebase-firestore.js";
+
+const firebaseConfig = {
+
+  apiKey: "AIzaSyDyK82geWVGsrd63KE7e-HyXTJzaVoVJR4",
+  authDomain: "controle-financeiro-a1dce.firebaseapp.com",
+  projectId: "controle-financeiro-a1dce",
+  storageBucket: "controle-financeiro-a1dce.firebasestorage.app",
+  messagingSenderId: "369562887516",
+  appId: "1:369562887516:web:30a6cc3a3dfe85f1844d99"
+
+};
+
+const app = initializeApp(firebaseConfig);
+
+const db = getFirestore(app);
+
+window.db = db;
+window.collection = collection;
+window.addDoc = addDoc;
+window.getDocs = getDocs;
+
+console.log("Firebase conectado!");
+
+</script>
 </body>
 </html>
