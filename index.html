@@ -625,7 +625,36 @@ let parcelasApartamento = JSON.parse(localStorage.getItem('parcelasApartamento')
     { mes: "32", data: "2028-04-15", parcelaEntrada: 639.42, construcao: 0, evolucaoObra: 1584.54, parcelaTotal: 2223.96, situacao: "NÃO PAGO" },
     { mes: "33", data: "2028-05-15", parcelaEntrada: 100.00, construcao: 0, evolucaoObra: 1637.87, parcelaTotal: 1737.87, situacao: "NÃO PAGO" }
 ];
+async function salvarDados() {
 
+  const dados = {
+    lancamentos,
+    configuracoes,
+    contasFixas,
+    parcelasApartamento
+  };
+
+  await setDoc(doc(db, "financeiro", "dados"), dados);
+
+  console.log("Dados salvos no Firebase!");
+}
+
+async function carregarDados() {
+
+  const documento = await getDoc(doc(db, "financeiro", "dados"));
+
+  if (documento.exists()) {
+
+    const dados = documento.data();
+
+    lancamentos = dados.lancamentos || [];
+    configuracoes = dados.configuracoes || {};
+    contasFixas = dados.contasFixas || [];
+    parcelasApartamento = dados.parcelasApartamento || [];
+
+    console.log("Dados carregados do Firebase!");
+  }
+}
 const modal = document.getElementById('editModal');
 const closeModal = document.querySelector('.close');
 let balancoChart;
