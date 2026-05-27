@@ -734,7 +734,7 @@ function atualizarTabelaLancamentos() {
     document.querySelectorAll('#tabela-lancamentos .delete-btn').forEach(btn => {
         btn.addEventListener('click', function() {
             lancamentos.splice(parseInt(this.dataset.index), 1);
-            localStorage.setItem('lancamentos', JSON.stringify(lancamentos));
+            salvarDados('lancamentos', JSON.stringify(lancamentos));
             atualizarTabelaLancamentos(); atualizarDashboard(); atualizarPagamentos();
         });
     });
@@ -959,14 +959,14 @@ function renderContasFixas() {
 
 function toggleDestaque(index) {
     contasFixas[index].destaque = !contasFixas[index].destaque;
-    localStorage.setItem('contasFixas', JSON.stringify(contasFixas));
+    salvarDados('contasFixas', JSON.stringify(contasFixas));
     renderContasFixas();
     atualizarPagamentos();
 }
 
 function atualizarValorContaFixa(index, novoValor) {
     contasFixas[index].valor = parseFloat(novoValor) || 0;
-    localStorage.setItem('contasFixas', JSON.stringify(contasFixas));
+    salvarDados('contasFixas', JSON.stringify(contasFixas));
     atualizarDashboard(); atualizarPagamentos();
 }
 
@@ -974,14 +974,14 @@ function excluirTodasParcelas(grupoNome, formaPagamento) {
     const count = lancamentos.filter(l => l.parcelado && l.descricao.replace(/ \(\d+\/\d+\)$/, '') === grupoNome && l.formaPagamento === formaPagamento).length;
     if (!confirm(`Excluir todas as ${count} parcelas de "${grupoNome}"?`)) return;
     lancamentos = lancamentos.filter(l => !(l.parcelado && l.descricao.replace(/ \(\d+\/\d+\)$/, '') === grupoNome && l.formaPagamento === formaPagamento));
-    localStorage.setItem('lancamentos', JSON.stringify(lancamentos));
+    salvarDados('lancamentos', JSON.stringify(lancamentos));
     atualizarTabelaLancamentos(); atualizarDashboard(); atualizarPagamentos();
 }
 
 function excluirContaFixa(index) {
     if (!confirm(`Excluir "${contasFixas[index].nome}"?`)) return;
     contasFixas.splice(index, 1);
-    localStorage.setItem('contasFixas', JSON.stringify(contasFixas));
+    salvarDados('contasFixas', JSON.stringify(contasFixas));
     renderContasFixas(); atualizarDashboard(); atualizarPagamentos();
 }
 
@@ -1050,7 +1050,7 @@ function ciclaSituacaoApt(index) {
     const atual = parcelasApartamento[index].situacao;
     const pos = ciclo.indexOf(atual);
     parcelasApartamento[index].situacao = ciclo[(pos + 1) % ciclo.length];
-    localStorage.setItem('parcelasApartamento', JSON.stringify(parcelasApartamento));
+    salvarDados('parcelasApartamento', JSON.stringify(parcelasApartamento));
     atualizarTabelaApartamento();
 }
 
@@ -1127,7 +1127,7 @@ function gerarRelatorioPagamento(dia) {
         relatorio += `💰 *Total*: ${formatarMoeda(total30)}`;
         lancamentos = lancamentos.filter(l => l.formaPagamento !== 'Cartão Inter' && l.formaPagamento !== 'Cartão Sofisa');
     }
-    localStorage.setItem('lancamentos', JSON.stringify(lancamentos));
+    salvarDados('lancamentos', JSON.stringify(lancamentos));
     atualizarTabelaLancamentos(); atualizarDashboard(); atualizarPagamentos();
     navigator.clipboard.writeText(relatorio).then(() => alert('Fatura Fechada! Agora é só colar no WhatsApp 😉'));
 }
@@ -1152,7 +1152,7 @@ document.getElementById('form-lancamento').addEventListener('submit', function(e
         categoria: document.getElementById('categoria').value,
         formaPagamento: document.getElementById('forma-pagamento').value
     });
-    localStorage.setItem('lancamentos', JSON.stringify(lancamentos));
+    salvarDados('lancamentos', JSON.stringify(lancamentos));
     this.reset();
     document.getElementById('data').value = new Date().toISOString().split('T')[0];
     atualizarTabelaLancamentos(); atualizarDashboard(); atualizarPagamentos();
@@ -1166,7 +1166,7 @@ document.getElementById('form-configuracoes').addEventListener('submit', functio
         saldoLivreInter: parseFloat(document.getElementById('saldo-livre-inter').value) || 0,
         saldoLivreSofisa: parseFloat(document.getElementById('saldo-livre-sofisa').value) || 0
     };
-    localStorage.setItem('configuracoes', JSON.stringify(configuracoes));
+    salvarDados('configuracoes', JSON.stringify(configuracoes));
     alert('Configurações salvas com sucesso!');
     atualizarDashboard(); atualizarPagamentos();
 });
@@ -1189,7 +1189,7 @@ document.getElementById('form-edicao').addEventListener('submit', function(e) {
         categoria: document.getElementById('edit-categoria').value,
         formaPagamento: document.getElementById('edit-forma-pagamento').value
     };
-    localStorage.setItem('lancamentos', JSON.stringify(lancamentos));
+    salvarDados('lancamentos', JSON.stringify(lancamentos));
     modal.style.display = 'none';
     atualizarTabelaLancamentos(); atualizarDashboard(); atualizarPagamentos();
 });
@@ -1217,7 +1217,7 @@ document.getElementById('form-edicao-apartamento').addEventListener('submit', fu
         parcelaTotal: pe + eo,
         situacao: parcelasApartamento[idx].situacao
     };
-    localStorage.setItem('parcelasApartamento', JSON.stringify(parcelasApartamento));
+    salvarDados('parcelasApartamento', JSON.stringify(parcelasApartamento));
     modalApartamento.style.display = 'none';
     atualizarTabelaApartamento();
 });
@@ -1254,13 +1254,16 @@ document.getElementById('btn-salvar-conta').addEventListener('click', () => {
     const editIndex = parseInt(document.getElementById('cf-edit-index').value);
     if (editIndex >= 0) contasFixas[editIndex] = conta;
     else contasFixas.push(conta);
-    localStorage.setItem('contasFixas', JSON.stringify(contasFixas));
+    salvarDados('contasFixas', JSON.stringify(contasFixas));
     document.getElementById('form-add-conta-wrapper').style.display = 'none';
     document.getElementById('btn-show-form-conta').style.display = '';
     renderContasFixas(); atualizarDashboard(); atualizarPagamentos();
 });
 
-document.addEventListener('DOMContentLoaded', function() {
+document.addEventListener('DOMContentLoaded', async function() {
+
+    await carregarDados();
+
     document.getElementById('data').value = new Date().toISOString().split('T')[0];
 
     carregarConfiguracoes();
