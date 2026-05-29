@@ -1015,7 +1015,7 @@ function atualizarPagamentos() {
             <span>${label}:</span>
             <span style="display:flex;flex-direction:column;align-items:flex-end;">
                 <span style="font-weight:600;">${formatarMoeda(valor)}</span>
-                ${limite > 0 ? `<small style="font-size:0.75rem;color:${saldoCor};font-weight:500;">Disponível: ${formatarMoeda(saldoDisp)}</small>` : ''}
+                ${limite > 0 ? `<small style="font-size:0.75rem;color:${saldoCor};font-weight:500;">${formatarMoeda(saldoDisp)}</small>` : ''}
             </span>`;
         return div;
     }
