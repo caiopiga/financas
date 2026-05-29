@@ -273,7 +273,7 @@
     <!-- ===== DASHBOARD ===== -->
     <div class="tab-content active" id="dashboard">
         <div class="dashboard">
-            <div id="dashboard-cards" style="display:contents;"></div>
+            <div id="dashboard-cards" style="display:flex;flex-wrap:wrap;gap:1.5rem;width:100%;"></div>
 
             <div class="resumo-financeiro">
                 <h2><i class="fas fa-chart-pie"></i> Resumo Financeiro</h2>
@@ -856,43 +856,18 @@ function somaContasFixasCartao(cartao) {
     return contasFixas.filter(c => c.pagamento === cartao).reduce((t, c) => t + parseFloat(c.valor), 0);
 }
 function somaContasFixasCiclo(ciclo, excluirCartoes) {
+    const nomesCartoes = cartoes.map(c => 'Cartão ' + c.nome);
+    // fallback para compatibilidade com nomes antigos
+    const todosCartoes = [...new Set([...nomesCartoes, 'Cartão Nubank', 'Cartão Inter', 'Cartão Sofisa'])];
     return contasFixas
-        .filter(c => c.ciclo === ciclo && (!excluirCartoes || !['Cartão Nubank','Cartão Inter','Cartão Sofisa'].includes(c.pagamento)))
+        .filter(c => c.ciclo === ciclo && (!excluirCartoes || !todosCartoes.includes(c.pagamento)))
         .reduce((t, c) => t + parseFloat(c.valor), 0);
 }
 
 /* ===== DASHBOARD ===== */
 function atualizarDashboard() {
-    const fixasNubank = somaContasFixasCartao('Cartão Nubank');
-    const fixasInter = somaContasFixasCartao('Cartão Inter');
-
-    const faturaNubank = calcularFaturaNubank() + fixasNubank;
-    const faturaInter = calcularFaturaInter() + fixasInter;
-    const faturaSofisa = calcularFaturaSofisa();
-
-    document.getElementById('nubank-fatura-total').textContent = formatarMoeda(faturaNubank);
-    document.getElementById('nubank-limite').textContent = formatarMoeda((configuracoes.saldoLivreNubank || 0) - faturaNubank);
-
-    document.getElementById('inter-fatura-total').textContent = formatarMoeda(faturaInter);
-    document.getElementById('inter-limite').textContent = formatarMoeda((configuracoes.saldoLivreInter || 0) - faturaInter);
-
-    document.getElementById('sofisa-fatura-total').textContent = formatarMoeda(faturaSofisa);
-    document.getElementById('sofisa-limite').textContent = formatarMoeda((configuracoes.saldoLivreSofisa || 0) - faturaSofisa);
-
-    // Atualizar cards de cartões dinamicamente
     renderDashboardCartoes();
-
     atualizarResumoFinanceiro();
-}
-
-function getFaturaCartao(nomeCartao) {
-    const nome = nomeCartao.toLowerCase();
-    if (nome.includes('nubank')) return calcularFaturaNubank() + somaContasFixasCartao('Cartão Nubank');
-    if (nome.includes('inter'))  return calcularFaturaInter()  + somaContasFixasCartao('Cartão Inter');
-    if (nome.includes('sofisa')) return calcularFaturaSofisa();
-    // Genérico: procura nos lançamentos e contas fixas
-    return lancamentos.filter(l => l.formaPagamento && l.formaPagamento.toLowerCase().includes(nome)).reduce((t,l) => t + parseFloat(l.valor), 0)
-         + contasFixas.filter(c => c.pagamento && c.pagamento.toLowerCase().includes(nome)).reduce((t,c) => t + parseFloat(c.valor), 0);
 }
 
 function renderDashboardCartoes() {
@@ -903,7 +878,13 @@ function renderDashboardCartoes() {
         ['#8307bf','#9d33d9'],['#ff7a00','#ff9a3c'],['#1a1a1a','#2d2d2d'],
         ['#0ea5e9','#38bdf8'],['#10b981','#34d399'],['#f59e0b','#fbbf24']
     ];
-    cartoes.forEach((c, i) => {
+    // Fallback: se nenhum cartão cadastrado, mostrar os 3 antigos
+    const lista = cartoes.length > 0 ? cartoes : [
+        { nome: 'Nubank', limite: configuracoes.saldoLivreNubank||0, vencimento: 15, fechamento: 12, ciclo: 'dia15' },
+        { nome: 'Inter',  limite: configuracoes.saldoLivreInter||0,  vencimento: 30, fechamento: 24, ciclo: 'dia30' },
+        { nome: 'Sofisa', limite: configuracoes.saldoLivreSofisa||0, vencimento: 1,  fechamento: 26, ciclo: 'dia30' }
+    ];
+    lista.forEach((c, i) => {
         const [cor1, cor2] = cores[i % cores.length];
         const fatura = getFaturaCartao(c.nome);
         const saldoDisp = (parseFloat(c.limite) || 0) - fatura;
@@ -916,7 +897,7 @@ function renderDashboardCartoes() {
                 <h3><i class="fab fa-cc-mastercard"></i> ${c.nome}</h3>
                 <div class="card-info">
                     <span>Fatura atual:</span>
-                    <span id="card-fatura-${i}">${formatarMoeda(fatura)}</span>
+                    <span>${formatarMoeda(fatura)}</span>
                 </div>
                 <div class="card-info">
                     <span>Limite disponível:</span>
@@ -984,10 +965,37 @@ closeModal.addEventListener('click', () => modal.style.display = 'none');
 window.addEventListener('click', e => { if (e.target == modal) modal.style.display = 'none'; });
 
 /* ===== PAGAMENTOS ===== */
+function getFaturaCartao(nomeCartao) {
+    const nome = nomeCartao.toLowerCase();
+    if (nome.includes('nubank')) return calcularFaturaNubank() + somaContasFixasCartao('Cartão Nubank');
+    if (nome.includes('inter'))  return calcularFaturaInter()  + somaContasFixasCartao('Cartão Inter');
+    if (nome.includes('sofisa')) return calcularFaturaSofisa();
+    const nomeCartaoFull = 'Cartão ' + nomeCartao;
+    return lancamentos.filter(l => l.formaPagamento === nomeCartaoFull).reduce((t,l) => t + parseFloat(l.valor), 0)
+         + contasFixas.filter(c => c.pagamento === nomeCartaoFull).reduce((t,c) => t + parseFloat(c.valor), 0);
+}
+
 function atualizarPagamentos() {
-    const faturaNubank = calcularFaturaNubank() + somaContasFixasCartao('Cartão Nubank');
-    const faturaInter = calcularFaturaInter() + somaContasFixasCartao('Cartão Inter');
-    const faturaSofisa = calcularFaturaSofisa();
+    const salario15 = getSalarioCiclo('dia15');
+    const salario30 = getSalarioCiclo('dia30');
+
+    // Montar lista de faturas por ciclo a partir dos cartões cadastrados
+    const cartoes15 = cartoes.filter(c => c.ciclo === 'dia15');
+    const cartoes30 = cartoes.filter(c => c.ciclo === 'dia30');
+
+    const faturas15 = cartoes15.length > 0
+        ? cartoes15.map(c => ({ nome: c.nome, fatura: getFaturaCartao(c.nome), limite: parseFloat(c.limite)||0 }))
+        : [{ nome: 'Nubank', fatura: calcularFaturaNubank() + somaContasFixasCartao('Cartão Nubank'), limite: configuracoes.saldoLivreNubank||0 }];
+
+    const faturas30 = cartoes30.length > 0
+        ? cartoes30.map(c => ({ nome: c.nome, fatura: getFaturaCartao(c.nome), limite: parseFloat(c.limite)||0 }))
+        : [
+            { nome: 'Inter',  fatura: calcularFaturaInter()  + somaContasFixasCartao('Cartão Inter'),  limite: configuracoes.saldoLivreInter||0 },
+            { nome: 'Sofisa', fatura: calcularFaturaSofisa(),                                           limite: configuracoes.saldoLivreSofisa||0 }
+          ];
+
+    const totalFaturas15 = faturas15.reduce((t,f) => t + f.fatura, 0);
+    const totalFaturas30 = faturas30.reduce((t,f) => t + f.fatura, 0);
     const fixasDia15SemCartao = somaContasFixasCiclo('dia15', true);
     const fixasDia30SemCartao = somaContasFixasCiclo('dia30', true);
 
@@ -998,8 +1006,8 @@ function atualizarPagamentos() {
         return div;
     }
 
-    function criarItemFaturaCartao(label, valor, limiteCartao) {
-        const saldoDisp = limiteCartao - valor;
+    function criarItemFaturaCartao(label, valor, limite) {
+        const saldoDisp = limite - valor;
         const saldoCor = saldoDisp >= 0 ? 'var(--success-color)' : 'var(--danger-color)';
         const div = document.createElement('div');
         div.className = 'payment-item';
@@ -1007,7 +1015,7 @@ function atualizarPagamentos() {
             <span>${label}:</span>
             <span style="display:flex;flex-direction:column;align-items:flex-end;">
                 <span style="font-weight:600;">${formatarMoeda(valor)}</span>
-                <small style="font-size:0.75rem;color:${saldoCor};font-weight:500;">Disponível: ${formatarMoeda(saldoDisp)}</small>
+                ${limite > 0 ? `<small style="font-size:0.75rem;color:${saldoCor};font-weight:500;">Disponível: ${formatarMoeda(saldoDisp)}</small>` : ''}
             </span>`;
         return div;
     }
@@ -1019,25 +1027,20 @@ function atualizarPagamentos() {
         const item = criarItemPagamento(c.nome, parseFloat(c.valor));
         if (c.pagamento === 'Boleto' && c.codbarras) {
             const barcodeDiv = document.createElement('div');
-            barcodeDiv.style.cssText = 'font-size:0.72rem;color:var(--text-light);word-break:break-all;padding:0.2rem 0 0.5rem 0;font-family:monospace;';
+            barcodeDiv.style.cssText = 'font-size:0.72rem;color:var(--text-light);word-break:break-all;padding:0.2rem 0 0.5rem 0;font-family:monospace;width:100%;';
             barcodeDiv.innerHTML = `<i class="fas fa-barcode" style="margin-right:0.3rem;"></i>${c.codbarras}`;
             item.style.flexWrap = 'wrap';
             item.appendChild(barcodeDiv);
         }
         items15.appendChild(item);
     });
-    // Fatura Nubank com limite disponível
-    const limNubank = configuracoes.saldoLivreNubank || 0;
-    items15.appendChild(criarItemFaturaCartao('Fatura Nubank', faturaNubank, limNubank));
-    const despesasDia15 = fixasDia15SemCartao + faturaNubank;
-    const investimentoDia15 = Math.max(0, (parseFloat(configuracoes.salario1) || 0) - despesasDia15);
+    faturas15.forEach(f => items15.appendChild(criarItemFaturaCartao('Fatura ' + f.nome, f.fatura, f.limite)));
+    const despesasDia15 = fixasDia15SemCartao + totalFaturas15;
+    const investimentoDia15 = Math.max(0, salario15 - despesasDia15);
     items15.appendChild(criarItemPagamento('Investir', investimentoDia15));
-    const totalDia15 = parseFloat(configuracoes.salario1) || 0;
-    const totalItem15 = criarItemPagamento('Total', totalDia15);
-    totalItem15.style.fontWeight = '600';
-    totalItem15.style.fontSize = '1.05rem';
-    totalItem15.style.paddingTop = '1.25rem';
-    totalItem15.style.borderBottom = 'none';
+    const totalItem15 = criarItemPagamento('Total', salario15);
+    totalItem15.style.fontWeight = '600'; totalItem15.style.fontSize = '1.05rem';
+    totalItem15.style.paddingTop = '1.25rem'; totalItem15.style.borderBottom = 'none';
     items15.appendChild(totalItem15);
 
     /* --- DIA 30 --- */
@@ -1047,27 +1050,20 @@ function atualizarPagamentos() {
         const item = criarItemPagamento(c.nome, parseFloat(c.valor));
         if (c.pagamento === 'Boleto' && c.codbarras) {
             const barcodeDiv = document.createElement('div');
-            barcodeDiv.style.cssText = 'font-size:0.72rem;color:var(--text-light);word-break:break-all;padding:0.2rem 0 0.5rem 0;font-family:monospace;';
+            barcodeDiv.style.cssText = 'font-size:0.72rem;color:var(--text-light);word-break:break-all;padding:0.2rem 0 0.5rem 0;font-family:monospace;width:100%;';
             barcodeDiv.innerHTML = `<i class="fas fa-barcode" style="margin-right:0.3rem;"></i>${c.codbarras}`;
             item.style.flexWrap = 'wrap';
             item.appendChild(barcodeDiv);
         }
         items30.appendChild(item);
     });
-    // Faturas Inter e Sofisa com limite disponível
-    const limInter  = configuracoes.saldoLivreInter  || 0;
-    const limSofisa = configuracoes.saldoLivreSofisa || 0;
-    items30.appendChild(criarItemFaturaCartao('Fatura Inter',  faturaInter,  limInter));
-    items30.appendChild(criarItemFaturaCartao('Fatura Sofisa', faturaSofisa, limSofisa));
-    const despesasDia30 = fixasDia30SemCartao + faturaInter + faturaSofisa;
-    const investimentoDia30 = Math.max(0, (parseFloat(configuracoes.salario2) || 0) - despesasDia30);
+    faturas30.forEach(f => items30.appendChild(criarItemFaturaCartao('Fatura ' + f.nome, f.fatura, f.limite)));
+    const despesasDia30 = fixasDia30SemCartao + totalFaturas30;
+    const investimentoDia30 = Math.max(0, salario30 - despesasDia30);
     items30.appendChild(criarItemPagamento('Investir', investimentoDia30));
-    const totalDia30 = parseFloat(configuracoes.salario2) || 0;
-    const totalItem30 = criarItemPagamento('Total', totalDia30);
-    totalItem30.style.fontWeight = '600';
-    totalItem30.style.fontSize = '1.05rem';
-    totalItem30.style.paddingTop = '1.25rem';
-    totalItem30.style.borderBottom = 'none';
+    const totalItem30 = criarItemPagamento('Total', salario30);
+    totalItem30.style.fontWeight = '600'; totalItem30.style.fontSize = '1.05rem';
+    totalItem30.style.paddingTop = '1.25rem'; totalItem30.style.borderBottom = 'none';
     items30.appendChild(totalItem30);
 }
 
@@ -1082,38 +1078,36 @@ function atualizarResumoFinanceiro() {
     const totalDespesasFixas = contasFixas.reduce((t, c) => t + (parseFloat(c.valor) || 0), 0);
 
     // INVESTIMENTOS: calculado igual à aba Pagamentos (sobra do salário após despesas de cada ciclo)
-    const faturaNubank = calcularFaturaNubank() + somaContasFixasCartao('Cartão Nubank');
-    const faturaInter  = calcularFaturaInter()  + somaContasFixasCartao('Cartão Inter');
-    const faturaSofisa = calcularFaturaSofisa();
-    const despesasDia15 = somaContasFixasCiclo('dia15', true) + faturaNubank;
-    const despesasDia30 = somaContasFixasCiclo('dia30', true) + faturaInter + faturaSofisa;
+    const faturas15tot = (cartoes.filter(c=>c.ciclo==='dia15').length > 0
+        ? cartoes.filter(c=>c.ciclo==='dia15').map(c=>getFaturaCartao(c.nome))
+        : [calcularFaturaNubank() + somaContasFixasCartao('Cartão Nubank')]
+    ).reduce((t,v)=>t+v, 0);
+    const faturas30tot = (cartoes.filter(c=>c.ciclo==='dia30').length > 0
+        ? cartoes.filter(c=>c.ciclo==='dia30').map(c=>getFaturaCartao(c.nome))
+        : [calcularFaturaInter() + somaContasFixasCartao('Cartão Inter'), calcularFaturaSofisa()]
+    ).reduce((t,v)=>t+v, 0);
+    const despesasDia15 = somaContasFixasCiclo('dia15', true) + faturas15tot;
+    const despesasDia30 = somaContasFixasCiclo('dia30', true) + faturas30tot;
     const investimentoDia15 = Math.max(0, salario1 - despesasDia15);
     const investimentoDia30 = Math.max(0, salario2 - despesasDia30);
     const totalInvestimentos = investimentoDia15 + investimentoDia30;
 
-    // LIVRE: soma dos gastos reais nos cartoes (lancamentos da aba Lancamentos)
-    // Sempre reflete o que foi efetivamente gasto, seja menor, igual ou maior que o limite
-    // Se ultrapassar o limite configurado, o excesso e descontado dos investimentos
-    const limiteNubank  = parseFloat(configuracoes.saldoLivreNubank)  || 0;
-    const limiteInter   = parseFloat(configuracoes.saldoLivreInter)   || 0;
-    const limiteSofisa  = parseFloat(configuracoes.saldoLivreSofisa)  || 0;
-
-    // Gasto real em cada cartao (apenas lancamentos manuais, sem contas fixas)
+    // LIVRE: soma dos gastos reais nos cartões (lançamentos)
+    const limiteTotal = cartoes.reduce((t,c) => t + (parseFloat(c.limite)||0), 0) || (configuracoes.saldoLivreNubank||0) + (configuracoes.saldoLivreInter||0) + (configuracoes.saldoLivreSofisa||0);
     const gastoNubank = calcularFaturaNubank();
     const gastoInter  = calcularFaturaInter();
     const gastoSofisa = lancamentos.filter(l => l.formaPagamento === 'Cartão Sofisa').reduce((t, l) => t + parseFloat(l.valor), 0);
     let totalLivre = gastoNubank + gastoInter + gastoSofisa;
 
-    // Se ultrapassou o limite de algum cartao, o excesso sai dos investimentos
+    // limites individuais para cálculo de excesso
+    const limiteNubank  = parseFloat(configuracoes.saldoLivreNubank)  || 0;
+    const limiteInter   = parseFloat(configuracoes.saldoLivreInter)   || 0;
+    const limiteSofisa  = parseFloat(configuracoes.saldoLivreSofisa)  || 0;
     const excessoNubank = Math.max(0, gastoNubank - limiteNubank);
     const excessoInter  = Math.max(0, gastoInter  - limiteInter);
     const excessoSofisa = Math.max(0, gastoSofisa - limiteSofisa);
     const totalExcesso  = excessoNubank + excessoInter + excessoSofisa;
-    let totalInvestimentosAjustado = totalInvestimentos;
-    if (totalExcesso > 0) {
-        totalInvestimentosAjustado = Math.max(0, totalInvestimentos - totalExcesso);
-    }
-    const totalInvestimentosFinal = totalInvestimentosAjustado;
+    const totalInvestimentosFinal = totalExcesso > 0 ? Math.max(0, totalInvestimentos - totalExcesso) : totalInvestimentos;
 
     // PERCENTUAIS em relação às entradas
     function pct(valor) {
@@ -1132,7 +1126,7 @@ function atualizarResumoFinanceiro() {
 
     const livreEl = document.getElementById('saldo-mensal');
     livreEl.textContent = formatarMoeda(totalLivre);
-    livreEl.className   = totalLivre > limiteNubank + limiteInter + limiteSofisa ? 'resumo-value valor-negativo' : 'resumo-value valor-positivo';
+    livreEl.className   = totalLivre > limiteTotal ? 'resumo-value valor-negativo' : 'resumo-value valor-positivo';
     document.getElementById('pct-livre').textContent = pct(totalLivre);
 
     atualizarGraficoBalanco(totalEntradas, totalDespesasFixas, totalInvestimentosFinal, totalLivre);
