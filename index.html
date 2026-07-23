@@ -194,44 +194,6 @@
         }
         .cfg-modal-close:hover { background: var(--bg-light); color: var(--text-dark); }
 
-        /* ===== TOOLTIPS APARTAMENTO ===== */
-        .apt-tooltip-wrap {
-            position: relative;
-            display: inline-block;
-            cursor: default;
-        }
-        .apt-tooltip-wrap .apt-tooltip {
-            visibility: hidden;
-            opacity: 0;
-            pointer-events: none;
-            position: absolute;
-            bottom: calc(100% + 10px);
-            left: 50%;
-            transform: translateX(-50%);
-            background: #1f2937;
-            color: #fff;
-            padding: 0.65rem 0.9rem;
-            border-radius: 0.5rem;
-            font-size: 0.78rem;
-            white-space: nowrap;
-            box-shadow: 0 6px 20px rgba(0,0,0,0.25);
-            z-index: 999;
-            transition: opacity 0.2s ease, visibility 0.2s ease;
-            line-height: 1.6;
-        }
-        .apt-tooltip-wrap .apt-tooltip::after {
-            content: '';
-            position: absolute;
-            top: 100%;
-            left: 50%;
-            transform: translateX(-50%);
-            border: 6px solid transparent;
-            border-top-color: #1f2937;
-        }
-        .apt-tooltip-wrap:hover .apt-tooltip {
-            visibility: visible;
-            opacity: 1;
-        }
         @media (max-width: 900px) { body { padding: 0.75rem; } .container { padding: 0; } .dashboard { flex-direction: column; } .card { min-width: 100%; } .tab { padding: 0.75rem 0.5rem; font-size: 0.85rem; } .resumo-cards { flex-direction: column; } .resumo-card { min-width: 100%; } }
         @media (max-width: 768px) { body { padding: 0.5rem; font-size: 0.9rem; } .header { padding: 1rem 1.5rem; } .header h1 { font-size: 1.35rem; } .tab-content { padding: 1rem; } .tab span { display: none; } .tab i { margin-right: 0; font-size: 1.2rem; } .form-row { flex-direction: column; } .form-group { min-width: 100%; } table { font-size: 0.85rem; } th, td { padding: 0.6rem 0.4rem; font-size: 0.85rem; } .modal-content { padding: 1.25rem; margin: 5% auto; width: 95%; } .card { padding: 1.25rem; } .card h3 { font-size: 1.25rem; } }
         @media (max-width: 480px) { body { padding: 0.25rem; } .header { padding: 0.75rem 1rem; margin-bottom: 1rem; } .header h1 { font-size: 1.15rem; } .tab-content { padding: 0.75rem; } .form-group { min-width: 100%; } input, select { padding: 0.65rem 0.85rem; font-size: 0.9rem; } button { padding: 0.65rem 1.25rem; font-size: 0.9rem; } .action-btn { padding: 0.3rem 0.45rem; font-size: 0.8rem; width: 2rem; height: 2rem; } table { display: block; overflow-x: auto; white-space: nowrap; font-size: 0.8rem; } th, td { padding: 0.5rem 0.35rem; font-size: 0.8rem; } .card { padding: 1rem; } .card h3 { font-size: 1.1rem; margin-bottom: 1rem; } .card-info { flex-direction: column; align-items: flex-start; gap: 0.25rem; } .resumo-icon { width: 40px; height: 40px; font-size: 1.1rem; } .resumo-value { font-size: 1.1rem; } .payment-option { font-size: 0.85rem; padding: 0.4rem 0.6rem; } }
@@ -332,7 +294,6 @@
         <div class="tab active" data-tab="dashboard"><i class="fas fa-chart-line"></i> <span>Dashboard</span></div>
         <div class="tab" data-tab="lancamentos"><i class="fas fa-file-invoice-dollar"></i> <span>Lançamentos</span></div>
         <div class="tab" data-tab="pagamentos"><i class="fas fa-credit-card"></i> <span>Pagamentos</span></div>
-        <div class="tab" data-tab="apartamento420b"><i class="fas fa-building"></i> <span>Apartamento 420B</span></div>
         <div class="tab" data-tab="configuracoes"><i class="fas fa-cog"></i> <span>Configurações</span></div>
     </div>
 
@@ -477,42 +438,6 @@
                 <button id="relatorio-inter" class="pay-btn"><i class="fas fa-file-alt"></i> Pagar Contas</button>
             </div>
         </div>
-    </div>
-
-    <!-- ===== APARTAMENTO ===== -->
-    <div class="tab-content" id="apartamento420b">
-        <h2><i class="fas fa-building"></i> Controle de Parcelas do Apartamento</h2>
-        <div class="resumo-cards" style="margin-bottom:1.5rem;">
-            <div class="resumo-card apt-tooltip-wrap">
-                <div class="resumo-icon" style="background-color:var(--success-color);"><i class="fas fa-check-circle"></i></div>
-                <div class="resumo-content"><span class="resumo-title">Parcelas Pagas</span><span class="resumo-value" id="parcelas-pagas">0</span></div>
-                <div class="apt-tooltip" id="tooltip-pagas">Carregando...</div>
-            </div>
-            <div class="resumo-card apt-tooltip-wrap">
-                <div class="resumo-icon" style="background-color:var(--warning-color);"><i class="fas fa-clock"></i></div>
-                <div class="resumo-content"><span class="resumo-title">Parcelas Pendentes</span><span class="resumo-value" id="parcelas-pendentes">0</span></div>
-                <div class="apt-tooltip" id="tooltip-pendentes">Carregando...</div>
-            </div>
-            <div class="resumo-card apt-tooltip-wrap">
-                <div class="resumo-icon" style="background-color:var(--primary-color);"><i class="fas fa-wallet"></i></div>
-                <div class="resumo-content"><span class="resumo-title">Total Pago</span><span class="resumo-value" id="total-pago-apt">R$ 0,00</span></div>
-                <div class="apt-tooltip" id="tooltip-total-pago">Carregando...</div>
-            </div>
-            <div class="resumo-card apt-tooltip-wrap">
-                <div class="resumo-icon" style="background-color:var(--danger-color);"><i class="fas fa-money-bill"></i></div>
-                <div class="resumo-content"><span class="resumo-title">Construção</span><span class="resumo-value" id="total-construcao-apt">0.000%</span></div>
-                <div class="apt-tooltip" id="tooltip-construcao">Carregando...</div>
-            </div>
-        </div>
-        <table id="tabela-apartamento">
-            <thead>
-                <tr>
-                    <th>Mês</th><th>Data</th><th>Parcela Entrada</th><th>Construção %</th>
-                    <th>Evolução de Obra</th><th>Parcela Total</th><th>Situação</th><th>Ações</th>
-                </tr>
-            </thead>
-            <tbody></tbody>
-        </table>
     </div>
 
     <!-- ===== CONFIGURAÇÕES ===== -->
@@ -883,30 +808,6 @@
     </div>
 </div>
 
-<!-- Modal edição apartamento -->
-<div id="editModalApartamento" class="modal">
-    <div class="modal-content">
-        <span class="close" id="closeApartamento">&times;</span>
-        <h2>Editar Parcela do Apartamento</h2>
-        <form id="form-edicao-apartamento">
-            <div class="form-row">
-                <div class="form-group"><label for="edit-mes">Mês</label><input type="text" id="edit-mes" required></div>
-                <div class="form-group"><label for="edit-data-apt">Data</label><input type="date" id="edit-data-apt" required></div>
-            </div>
-            <div class="form-row">
-                <div class="form-group"><label for="edit-parcela-entrada">Parcela Entrada</label><input type="number" id="edit-parcela-entrada" step="0.01" required></div>
-                <div class="form-group"><label for="edit-construcao">Construção %</label><input type="number" id="edit-construcao" step="0.001" min="0"></div>
-            </div>
-            <div class="form-row">
-                <div class="form-group"><label for="edit-evolucao-obra">Evolução de Obra</label><input type="number" id="edit-evolucao-obra" step="0.01" required></div>
-                <div class="form-group"><label for="edit-parcela-total">Parcela Total</label><input type="number" id="edit-parcela-total" step="0.01" readonly style="background-color:#f3f4f6;cursor:not-allowed;"></div>
-            </div>
-            <input type="hidden" id="edit-index-apt">
-            <button type="submit"><i class="fas fa-save"></i> Salvar Alterações</button>
-        </form>
-    </div>
-</div>
-
 <script>
 // ═══════════════════════════════════════════════════════
 //  ⚙️  CONFIGURAÇÃO DO FIREBASE — cole seus dados aqui
@@ -934,47 +835,6 @@ let configuracoes = { salario1: 0, salario2: 0, saldoLivreNubank: 0, saldoLivreI
 let contasFixas = [];
 let salarios = []; // [{data, valor, ciclo}]
 let cartoes = [];  // [{nome, limite, vencimento, fechamento, ciclo}]
-// Dados padrão do apartamento (usados apenas na 1ª vez que o Firebase estiver vazio)
-const parcelasApartamentoPadrao = [
-    { mes: "Ato", data: "2025-08-17", parcelaEntrada: 800.00, construcao: 0.000, evolucaoObra: 0.00, parcelaTotal: 800.00, situacao: "PAGO" },
-    { mes: "1", data: "2025-09-15", parcelaEntrada: 706.37, construcao: 0.000, evolucaoObra: 442.43, parcelaTotal: 1148.80, situacao: "PAGO" },
-    { mes: "2", data: "2025-10-15", parcelaEntrada: 710.04, construcao: 0.000, evolucaoObra: 432.76, parcelaTotal: 1142.80, situacao: "PAGO" },
-    { mes: "3", data: "2025-11-15", parcelaEntrada: 711.25, construcao: 0.000, evolucaoObra: 433.53, parcelaTotal: 1144.78, situacao: "PAGO" },
-    { mes: "4", data: "2025-12-15", parcelaEntrada: 713.38, construcao: 2.300, evolucaoObra: 463.52, parcelaTotal: 1176.90, situacao: "PAGO" },
-    { mes: "Parcial", data: "2025-12-20", parcelaEntrada: 3333.33, construcao: 0, evolucaoObra: 0, parcelaTotal: 3227.20, situacao: "PAGO" },
-    { mes: "5", data: "2026-01-15", parcelaEntrada: 715.31, construcao: 4.610, evolucaoObra: 570.46, parcelaTotal: 1285.77, situacao: "NÃO PAGO" },
-    { mes: "6", data: "2026-02-15", parcelaEntrada: 700.00, construcao: 0, evolucaoObra: 376.44, parcelaTotal: 1076.44, situacao: "NÃO PAGO" },
-    { mes: "7", data: "2026-03-15", parcelaEntrada: 700.00, construcao: 0, evolucaoObra: 376.59, parcelaTotal: 1076.59, situacao: "NÃO PAGO" },
-    { mes: "8", data: "2026-04-15", parcelaEntrada: 700.00, construcao: 0, evolucaoObra: 386.69, parcelaTotal: 1086.69, situacao: "NÃO PAGO" },
-    { mes: "9", data: "2026-05-15", parcelaEntrada: 700.00, construcao: 0, evolucaoObra: 397.24, parcelaTotal: 1097.24, situacao: "NÃO PAGO" },
-    { mes: "10", data: "2026-06-15", parcelaEntrada: 700.00, construcao: 0, evolucaoObra: 409.42, parcelaTotal: 1109.42, situacao: "NÃO PAGO" },
-    { mes: "11", data: "2026-07-15", parcelaEntrada: 700.00, construcao: 0, evolucaoObra: 423.38, parcelaTotal: 1123.38, situacao: "NÃO PAGO" },
-    { mes: "12", data: "2026-08-15", parcelaEntrada: 700.00, construcao: 0, evolucaoObra: 446.55, parcelaTotal: 1146.55, situacao: "NÃO PAGO" },
-    { mes: "13", data: "2026-09-15", parcelaEntrada: 700.00, construcao: 0, evolucaoObra: 470.47, parcelaTotal: 1170.47, situacao: "NÃO PAGO" },
-    { mes: "14", data: "2026-10-15", parcelaEntrada: 700.00, construcao: 0, evolucaoObra: 499.73, parcelaTotal: 1199.73, situacao: "NÃO PAGO" },
-    { mes: "15", data: "2026-11-15", parcelaEntrada: 700.00, construcao: 0, evolucaoObra: 528.85, parcelaTotal: 1228.85, situacao: "NÃO PAGO" },
-    { mes: "16", data: "2026-12-15", parcelaEntrada: 700.00, construcao: 0, evolucaoObra: 565.24, parcelaTotal: 1265.24, situacao: "NÃO PAGO" },
-    { mes: "Parcial", data: "2026-12-20", parcelaEntrada: 3333.33, construcao: 0, evolucaoObra: 0, parcelaTotal: 3333.33, situacao: "NÃO PAGO" },
-    { mes: "17", data: "2027-01-15", parcelaEntrada: 700.00, construcao: 0, evolucaoObra: 610.84, parcelaTotal: 1310.84, situacao: "NÃO PAGO" },
-    { mes: "18", data: "2027-02-15", parcelaEntrada: 700.00, construcao: 0, evolucaoObra: 657.63, parcelaTotal: 1357.63, situacao: "NÃO PAGO" },
-    { mes: "19", data: "2027-03-15", parcelaEntrada: 700.00, construcao: 0, evolucaoObra: 714.08, parcelaTotal: 1414.08, situacao: "NÃO PAGO" },
-    { mes: "20", data: "2027-04-15", parcelaEntrada: 700.00, construcao: 0, evolucaoObra: 779.74, parcelaTotal: 1479.74, situacao: "NÃO PAGO" },
-    { mes: "21", data: "2027-05-15", parcelaEntrada: 700.00, construcao: 0, evolucaoObra: 850.15, parcelaTotal: 1550.15, situacao: "NÃO PAGO" },
-    { mes: "22", data: "2027-06-15", parcelaEntrada: 700.00, construcao: 0, evolucaoObra: 921.89, parcelaTotal: 1621.89, situacao: "NÃO PAGO" },
-    { mes: "23", data: "2027-07-15", parcelaEntrada: 700.00, construcao: 0, evolucaoObra: 981.46, parcelaTotal: 1681.46, situacao: "NÃO PAGO" },
-    { mes: "24", data: "2027-08-15", parcelaEntrada: 700.00, construcao: 0, evolucaoObra: 1042.95, parcelaTotal: 1742.95, situacao: "NÃO PAGO" },
-    { mes: "25", data: "2027-09-15", parcelaEntrada: 639.42, construcao: 0, evolucaoObra: 1103.71, parcelaTotal: 1743.13, situacao: "NÃO PAGO" },
-    { mes: "26", data: "2027-10-15", parcelaEntrada: 639.42, construcao: 0, evolucaoObra: 1175.31, parcelaTotal: 1814.73, situacao: "NÃO PAGO" },
-    { mes: "27", data: "2027-11-15", parcelaEntrada: 639.42, construcao: 0, evolucaoObra: 1248.24, parcelaTotal: 1887.66, situacao: "NÃO PAGO" },
-    { mes: "28", data: "2027-12-15", parcelaEntrada: 639.42, construcao: 0, evolucaoObra: 1322.21, parcelaTotal: 1961.63, situacao: "NÃO PAGO" },
-    { mes: "Parcial", data: "2027-12-20", parcelaEntrada: 3333.33, construcao: 0, evolucaoObra: 0, parcelaTotal: 3333.33, situacao: "NÃO PAGO" },
-    { mes: "29", data: "2028-01-15", parcelaEntrada: 639.42, construcao: 0, evolucaoObra: 1386.39, parcelaTotal: 2025.81, situacao: "NÃO PAGO" },
-    { mes: "30", data: "2028-02-15", parcelaEntrada: 639.42, construcao: 0, evolucaoObra: 1457.83, parcelaTotal: 2097.25, situacao: "NÃO PAGO" },
-    { mes: "31", data: "2028-03-15", parcelaEntrada: 639.42, construcao: 0, evolucaoObra: 1520.22, parcelaTotal: 2159.64, situacao: "NÃO PAGO" },
-    { mes: "32", data: "2028-04-15", parcelaEntrada: 639.42, construcao: 0, evolucaoObra: 1584.54, parcelaTotal: 2223.96, situacao: "NÃO PAGO" },
-    { mes: "33", data: "2028-05-15", parcelaEntrada: 100.00, construcao: 0, evolucaoObra: 1637.87, parcelaTotal: 1737.87, situacao: "NÃO PAGO" }
-];
-let parcelasApartamento = [];
 
 // ─── Funções Firebase ──────────────────────────────────
 function setStatus(msg, tipo) {
@@ -1023,9 +883,6 @@ function iniciarSincronizacao() {
     snapshotUnsubscribe = DOC_REF.onSnapshot(doc => {
     const dados = doc.data();
     if (!dados) {
-        // Primeira vez: salvar dados padrão
-        salvarFirebase('parcelasApartamento', parcelasApartamentoPadrao);
-        parcelasApartamento = [...parcelasApartamentoPadrao];
         document.getElementById('loading-overlay').style.display = 'none';
         setStatus('☁️ Online', 'ok');
         return;
@@ -1035,7 +892,6 @@ function iniciarSincronizacao() {
     contasFixas          = dados.contasFixas          || [];
     salarios             = dados.salarios             || [];
     cartoes              = dados.cartoes              || [];
-    parcelasApartamento  = dados.parcelasApartamento  || [...parcelasApartamentoPadrao];
 
     // Backward compatibility: se não tem salarios mas tem configuracoes antigas, migrar
     if (salarios.length === 0 && (configuracoes.salario1 > 0 || configuracoes.salario2 > 0)) {
@@ -1057,7 +913,6 @@ function iniciarSincronizacao() {
     atualizarTabelaLancamentos();
     atualizarDashboard();
     atualizarPagamentos();
-    atualizarTabelaApartamento();
     }, err => {
         document.getElementById('loading-overlay').style.display = 'none';
         setStatus('❌ Sem conexão', 'err');
@@ -1624,122 +1479,6 @@ function atualizarVisibilidadePrazo() {
     document.getElementById('cf-data-group').style.display = prazo === 'personalizado' ? '' : 'none';
 }
 
-/* ===== APARTAMENTO ===== */
-function statusBadgeApt(situacao) {
-    if (situacao === 'PAGO') return 'badge-receita';
-    if (situacao === 'CURY CHEGA MAIS') return 'badge-cury';
-    if (situacao === 'EVOLUÇÃO DE OBRA') return 'badge-evolucao';
-    return 'badge-despesa';
-}
-
-function atualizarTabelaApartamento() {
-    const tbody = document.querySelector('#tabela-apartamento tbody');
-    tbody.innerHTML = '';
-    let pagas = 0, totalPago = 0, totalConstrucao = 0;
-    let pagasPuro = 0, pagasCury = 0, pagasEvolucao = 0;
-    let totalEntrada = 0, totalEvolucaoObra = 0;
-    let ultimaPendente = null;
-
-    parcelasApartamento.forEach((p, i) => {
-        const [ano, mes, dia] = p.data.split("-");
-        const isPago = p.situacao === 'PAGO' || p.situacao === 'CURY CHEGA MAIS' || p.situacao === 'EVOLUÇÃO DE OBRA';
-        if (isPago) {
-            pagas++;
-            totalPago += p.parcelaTotal;
-            totalEntrada += p.parcelaEntrada;
-            totalEvolucaoObra += p.evolucaoObra;
-            if (p.situacao === 'PAGO') pagasPuro++;
-            else if (p.situacao === 'CURY CHEGA MAIS') pagasCury++;
-            else if (p.situacao === 'EVOLUÇÃO DE OBRA') pagasEvolucao++;
-        } else {
-            ultimaPendente = p;
-        }
-        totalConstrucao += p.construcao;
-        const construcaoText = p.construcao > 0 ? p.construcao.toFixed(3) + '%' : '-';
-        const tr = document.createElement('tr');
-        tr.innerHTML = `
-            <td>${p.mes}</td><td>${dia}/${mes}/${ano}</td>
-            <td>${formatarMoeda(p.parcelaEntrada)}</td><td>${construcaoText}</td>
-            <td>${formatarMoeda(p.evolucaoObra)}</td><td><strong>${formatarMoeda(p.parcelaTotal)}</strong></td>
-            <td><span class="status-badge ${statusBadgeApt(p.situacao)}">${p.situacao}</span></td>
-            <td>
-                <button class="action-btn edit-btn" onclick="abrirModalEdicaoApartamento(${i})">✎</button>
-                <button class="action-btn" style="background-color:${isPago ? 'var(--danger-color)' : 'var(--success-color)'};" onclick="ciclaSituacaoApt(${i})" title="Alternar situação">${isPago ? '✗' : '✓'}</button>
-            </td>`;
-        tbody.appendChild(tr);
-    });
-
-    document.getElementById('parcelas-pagas').textContent = pagas + ' / ' + parcelasApartamento.length;
-    document.getElementById('parcelas-pendentes').textContent = parcelasApartamento.length - pagas;
-    document.getElementById('total-pago-apt').textContent = formatarMoeda(totalPago);
-    document.getElementById('total-construcao-apt').textContent = totalConstrucao.toFixed(3) + '%';
-
-    // ── Tooltip a) Parcelas Pagas ──
-    const ttPagas = document.getElementById('tooltip-pagas');
-    if (ttPagas) {
-        ttPagas.innerHTML =
-            `✅ Parcelas Pagas: <strong>${pagasPuro}</strong><br>` +
-            `📄 Parcelas Antecipadas: <strong>${pagasEvolucao}</strong><br>` +
-            `🏢 Cury Chega Mais: <strong>${pagasCury}</strong>`;
-    }
-
-    // ── Tooltip b) Parcelas Pendentes ──
-    const ttPendentes = document.getElementById('tooltip-pendentes');
-    if (ttPendentes) {
-        if (ultimaPendente) {
-            const [ap, mp, dp] = ultimaPendente.data.split("-");
-            ttPendentes.innerHTML = `📅 Última parcela em aberto: <strong>${dp}/${mp}/${ap}</strong>`;
-        } else {
-            ttPendentes.innerHTML = `🎉 Todas as parcelas estão quitadas!`;
-        }
-    }
-
-    // ── Tooltip c) Total Pago ──
-    const ttTotalPago = document.getElementById('tooltip-total-pago');
-    if (ttTotalPago) {
-        ttTotalPago.innerHTML =
-            `🏠 Parcelas de Entrada: <strong>${formatarMoeda(totalEntrada)}</strong><br>` +
-            `🏗️ Evolução de Obra: <strong>${formatarMoeda(totalEvolucaoObra)}</strong><br>` +
-            `💰 Total: <strong>${formatarMoeda(totalPago)}</strong>`;
-    }
-
-    // ── Tooltip d) Construção ──
-    const ttConstrucao = document.getElementById('tooltip-construcao');
-    if (ttConstrucao) {
-        const faltam = Math.max(0, 100 - totalConstrucao);
-        ttConstrucao.innerHTML = `⏳ Faltam <strong>${faltam.toFixed(3)}%</strong> para finalizar a construção`;
-    }
-}
-
-function ciclaSituacaoApt(index) {
-    const ciclo = ['NÃO PAGO', 'PAGO', 'CURY CHEGA MAIS', 'EVOLUÇÃO DE OBRA'];
-    const atual = parcelasApartamento[index].situacao;
-    const pos = ciclo.indexOf(atual);
-    parcelasApartamento[index].situacao = ciclo[(pos + 1) % ciclo.length];
-    salvarFirebase('parcelasApartamento', parcelasApartamento);
-    atualizarTabelaApartamento();
-}
-
-function toggleSituacaoParcela(index) { ciclaSituacaoApt(index); }
-
-function abrirModalEdicaoApartamento(index) {
-    const p = parcelasApartamento[index];
-    document.getElementById('edit-mes').value = p.mes;
-    document.getElementById('edit-data-apt').value = p.data;
-    document.getElementById('edit-parcela-entrada').value = p.parcelaEntrada;
-    document.getElementById('edit-construcao').value = p.construcao;
-    document.getElementById('edit-evolucao-obra').value = p.evolucaoObra;
-    document.getElementById('edit-parcela-total').value = p.parcelaTotal;
-    document.getElementById('edit-index-apt').value = index;
-    document.getElementById('editModalApartamento').style.display = 'block';
-}
-
-function calcularParcelaTotal() {
-    const e = parseFloat(document.getElementById('edit-parcela-entrada').value) || 0;
-    const o = parseFloat(document.getElementById('edit-evolucao-obra').value) || 0;
-    document.getElementById('edit-parcela-total').value = (e + o).toFixed(2);
-}
-
 function emojiConta(nome) {
     const n = nome.toLowerCase();
     if (n.includes('aluguel') || n.includes('mora')) return '🏠';
@@ -2094,31 +1833,6 @@ document.getElementById('form-edicao').addEventListener('submit', function(e) {
 
 document.getElementById('relatorio-nubank').addEventListener('click', () => gerarRelatorioPagamento(15));
 document.getElementById('relatorio-inter').addEventListener('click', () => gerarRelatorioPagamento(30));
-
-const modalApartamento = document.getElementById('editModalApartamento');
-document.getElementById('closeApartamento').addEventListener('click', () => modalApartamento.style.display = 'none');
-window.addEventListener('click', e => { if (e.target == modalApartamento) modalApartamento.style.display = 'none'; });
-document.getElementById('edit-parcela-entrada').addEventListener('input', calcularParcelaTotal);
-document.getElementById('edit-evolucao-obra').addEventListener('input', calcularParcelaTotal);
-
-document.getElementById('form-edicao-apartamento').addEventListener('submit', function(e) {
-    e.preventDefault();
-    const idx = parseInt(document.getElementById('edit-index-apt').value);
-    const pe = parseFloat(document.getElementById('edit-parcela-entrada').value);
-    const eo = parseFloat(document.getElementById('edit-evolucao-obra').value);
-    parcelasApartamento[idx] = {
-        mes: document.getElementById('edit-mes').value,
-        data: document.getElementById('edit-data-apt').value,
-        parcelaEntrada: pe,
-        construcao: parseFloat(document.getElementById('edit-construcao').value) || 0,
-        evolucaoObra: eo,
-        parcelaTotal: pe + eo,
-        situacao: parcelasApartamento[idx].situacao
-    };
-    salvarFirebase('parcelasApartamento', parcelasApartamento);
-    modalApartamento.style.display = 'none';
-    atualizarTabelaApartamento();
-});
 
 document.getElementById('cf-prazo').addEventListener('change', atualizarVisibilidadePrazo);
 
