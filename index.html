@@ -194,6 +194,44 @@
         }
         .cfg-modal-close:hover { background: var(--bg-light); color: var(--text-dark); }
 
+        /* ===== TOOLTIPS APARTAMENTO ===== */
+        .apt-tooltip-wrap {
+            position: relative;
+            display: inline-block;
+            cursor: default;
+        }
+        .apt-tooltip-wrap .apt-tooltip {
+            visibility: hidden;
+            opacity: 0;
+            pointer-events: none;
+            position: absolute;
+            bottom: calc(100% + 10px);
+            left: 50%;
+            transform: translateX(-50%);
+            background: #1f2937;
+            color: #fff;
+            padding: 0.65rem 0.9rem;
+            border-radius: 0.5rem;
+            font-size: 0.78rem;
+            white-space: nowrap;
+            box-shadow: 0 6px 20px rgba(0,0,0,0.25);
+            z-index: 999;
+            transition: opacity 0.2s ease, visibility 0.2s ease;
+            line-height: 1.6;
+        }
+        .apt-tooltip-wrap .apt-tooltip::after {
+            content: '';
+            position: absolute;
+            top: 100%;
+            left: 50%;
+            transform: translateX(-50%);
+            border: 6px solid transparent;
+            border-top-color: #1f2937;
+        }
+        .apt-tooltip-wrap:hover .apt-tooltip {
+            visibility: visible;
+            opacity: 1;
+        }
         @media (max-width: 900px) { body { padding: 0.75rem; } .container { padding: 0; } .dashboard { flex-direction: column; } .card { min-width: 100%; } .tab { padding: 0.75rem 0.5rem; font-size: 0.85rem; } .resumo-cards { flex-direction: column; } .resumo-card { min-width: 100%; } }
         @media (max-width: 768px) { body { padding: 0.5rem; font-size: 0.9rem; } .header { padding: 1rem 1.5rem; } .header h1 { font-size: 1.35rem; } .tab-content { padding: 1rem; } .tab span { display: none; } .tab i { margin-right: 0; font-size: 1.2rem; } .form-row { flex-direction: column; } .form-group { min-width: 100%; } table { font-size: 0.85rem; } th, td { padding: 0.6rem 0.4rem; font-size: 0.85rem; } .modal-content { padding: 1.25rem; margin: 5% auto; width: 95%; } .card { padding: 1.25rem; } .card h3 { font-size: 1.25rem; } }
         @media (max-width: 480px) { body { padding: 0.25rem; } .header { padding: 0.75rem 1rem; margin-bottom: 1rem; } .header h1 { font-size: 1.15rem; } .tab-content { padding: 0.75rem; } .form-group { min-width: 100%; } input, select { padding: 0.65rem 0.85rem; font-size: 0.9rem; } button { padding: 0.65rem 1.25rem; font-size: 0.9rem; } .action-btn { padding: 0.3rem 0.45rem; font-size: 0.8rem; width: 2rem; height: 2rem; } table { display: block; overflow-x: auto; white-space: nowrap; font-size: 0.8rem; } th, td { padding: 0.5rem 0.35rem; font-size: 0.8rem; } .card { padding: 1rem; } .card h3 { font-size: 1.1rem; margin-bottom: 1rem; } .card-info { flex-direction: column; align-items: flex-start; gap: 0.25rem; } .resumo-icon { width: 40px; height: 40px; font-size: 1.1rem; } .resumo-value { font-size: 1.1rem; } .payment-option { font-size: 0.85rem; padding: 0.4rem 0.6rem; } }
@@ -913,6 +951,10 @@ function iniciarSincronizacao() {
     atualizarTabelaLancamentos();
     atualizarDashboard();
     atualizarPagamentos();
+    if (window.__atalhoURLPendente) {
+        window.__atalhoURLPendente = false;
+        lancarViaURL();
+    }
     }, err => {
         document.getElementById('loading-overlay').style.display = 'none';
         setStatus('❌ Sem conexão', 'err');
@@ -1527,6 +1569,14 @@ function gerarRelatorioPagamento(dia) {
         relatorio += `📈 Investir: ${formatarMoeda(invest15)}\n`;
         relatorio += `\n💰 *Total*: ${formatarMoeda(total15)}`;
         lancamentos = lancamentos.filter(l => l.formaPagamento !== 'Cartão Nubank');
+        // Baixa de parcelas: contas fixas parceladas pagas no cartão de crédito perdem 1 parcela a cada fechamento
+        contasFixas.forEach(c => {
+            if (c.ciclo === 'dia15' && c.prazo === 'parcelas' && c.pagamento && c.pagamento.startsWith('Cartão ')) {
+                c.parcelas = (parseInt(c.parcelas) || 1) - 1;
+            }
+        });
+        // Remove automaticamente as contas parceladas no cartão que zeraram as parcelas
+        contasFixas = contasFixas.filter(c => !(c.prazo === 'parcelas' && c.pagamento && c.pagamento.startsWith('Cartão ') && parseInt(c.parcelas) <= 0));
         // Excluir contas de data específica do ciclo dia15; zerar apenas as variáveis
         contasFixas = contasFixas.filter(c => !(c.ciclo === 'dia15' && c.prazo === 'personalizado'));
         contasFixas.forEach((c,i) => {
@@ -1553,6 +1603,14 @@ function gerarRelatorioPagamento(dia) {
         relatorio += `📈 Investir: ${formatarMoeda(invest30)}\n`;
         relatorio += `\n💰 *Total*: ${formatarMoeda(total30)}`;
         lancamentos = lancamentos.filter(l => l.formaPagamento !== 'Cartão Inter' && l.formaPagamento !== 'Cartão Sofisa');
+        // Baixa de parcelas: contas fixas parceladas pagas no cartão de crédito perdem 1 parcela a cada fechamento
+        contasFixas.forEach(c => {
+            if (c.ciclo === 'dia30' && c.prazo === 'parcelas' && c.pagamento && c.pagamento.startsWith('Cartão ')) {
+                c.parcelas = (parseInt(c.parcelas) || 1) - 1;
+            }
+        });
+        // Remove automaticamente as contas parceladas no cartão que zeraram as parcelas
+        contasFixas = contasFixas.filter(c => !(c.prazo === 'parcelas' && c.pagamento && c.pagamento.startsWith('Cartão ') && parseInt(c.parcelas) <= 0));
         // Excluir contas de data específica do ciclo dia30; zerar apenas as variáveis
         contasFixas = contasFixas.filter(c => !(c.ciclo === 'dia30' && c.prazo === 'personalizado'));
         contasFixas.forEach((c,i) => {
@@ -1562,6 +1620,7 @@ function gerarRelatorioPagamento(dia) {
         salvarFirebase('contasFixas', contasFixas);
     }
     salvarFirebase('lancamentos', lancamentos);
+    renderContasFixas();
     atualizarTabelaLancamentos(); atualizarDashboard(); atualizarPagamentos();
     navigator.clipboard.writeText(relatorio).then(() => alert('Fatura Fechada! Agora é só colar no WhatsApp 😉'));
 }
@@ -1592,7 +1651,6 @@ document.getElementById('form-lancamento').addEventListener('submit', function(e
     atualizarTabelaLancamentos(); atualizarDashboard(); atualizarPagamentos();
 });
 // ─── Salário event listeners ───────────────────────────
-/* listeners antigos de salario removidos - substituídos por modal */
 document.getElementById('btn-salvar-salario').addEventListener('click', () => {
     const data  = document.getElementById('sal-data').value;
     const valor = parseFloat(document.getElementById('sal-valor').value) || 0;
@@ -1841,8 +1899,6 @@ document.getElementById('cf-pagamento').addEventListener('change', function() {
     document.getElementById('cf-codbarras-group').style.display = this.value === 'Boleto' ? '' : 'none';
 });
 
-/* listeners antigos de conta removidos - substituídos por modal */
-
 document.getElementById('btn-salvar-conta').addEventListener('click', () => {
     const nome = document.getElementById('cf-nome').value.trim();
     const valor = parseFloat(document.getElementById('cf-valor').value) || 0;
@@ -1958,6 +2014,130 @@ document.getElementById('btn-salvar-conta-m').addEventListener('click', () => {
 });
 
 window.addEventListener('click', e => { if (e.target == document.getElementById('modalContaFixa')) document.getElementById('modalContaFixa').style.display = 'none'; });
+
+function lancarViaURL() {
+    const params = new URLSearchParams(window.location.search);
+    if (!params.has('atalho')) return;
+
+    const descricao = params.get('desc') || '';
+    const valor = (params.get('valor') || '').replace(',', '.');
+    const cartao = params.get('cartao') || '';
+    const dataHoje = new Date().toISOString().split('T')[0];
+
+    const overlay = document.createElement('div');
+    overlay.style.cssText = 'position:fixed;inset:0;z-index:9999;background:rgba(0,0,0,0.65);display:flex;align-items:center;justify-content:center;padding:1rem;';
+
+    overlay.innerHTML = `
+        <div style="background:#fff;border-radius:16px;padding:1.75rem;width:100%;max-width:400px;box-sizing:border-box;">
+            <div style="text-align:center;margin-bottom:1.25rem;">
+                <div style="font-size:2rem;">💳</div>
+                <h2 style="font-size:1.15rem;font-weight:700;color:#1f2937;margin:0.4rem 0 0.2rem;">Novo lançamento</h2>
+                <p style="color:#6b7280;font-size:0.82rem;margin:0;">Detectado via ${cartao || 'Cartão'}</p>
+            </div>
+            <div style="background:#f9fafb;border-radius:10px;padding:1.1rem;margin-bottom:1.1rem;border:1px solid #e5e7eb;">
+                <div style="margin-bottom:0.85rem;">
+                    <label style="font-size:0.75rem;font-weight:600;color:#6b7280;display:block;margin-bottom:0.3rem;">DESCRIÇÃO</label>
+                    <input id="al-desc" value="${descricao}" style="width:100%;padding:0.55rem 0.75rem;border:1px solid #d1d5db;border-radius:7px;font-size:0.92rem;color:#1f2937;box-sizing:border-box;">
+                </div>
+                <div style="display:flex;gap:0.65rem;margin-bottom:0.85rem;">
+                    <div style="flex:1;min-width:0;">
+                        <label style="font-size:0.75rem;font-weight:600;color:#6b7280;display:block;margin-bottom:0.3rem;">VALOR (R$)</label>
+                        <input id="al-valor" type="number" step="0.01" value="${valor}" style="width:100%;padding:0.55rem 0.75rem;border:1px solid #d1d5db;border-radius:7px;font-size:0.92rem;color:#1f2937;box-sizing:border-box;">
+                    </div>
+                    <div style="flex:1;min-width:0;">
+                        <label style="font-size:0.75rem;font-weight:600;color:#6b7280;display:block;margin-bottom:0.3rem;">DATA</label>
+                        <input id="al-data" type="date" value="${dataHoje}" style="width:100%;padding:0.55rem 0.4rem;border:1px solid #d1d5db;border-radius:7px;font-size:0.78rem;color:#1f2937;box-sizing:border-box;">
+                    </div>
+                </div>
+                <div style="margin-bottom:0.85rem;">
+                    <label style="font-size:0.75rem;font-weight:600;color:#6b7280;display:block;margin-bottom:0.3rem;">CATEGORIA</label>
+                    <select id="al-categoria" style="width:100%;padding:0.55rem 0.75rem;border:1px solid #d1d5db;border-radius:7px;font-size:0.92rem;color:#1f2937;box-sizing:border-box;">
+                        <option value="Alimentação">Alimentação</option>
+                        <option value="Transporte">Transporte</option>
+                        <option value="Saúde">Saúde</option>
+                        <option value="Lazer">Lazer</option>
+                        <option value="Educação">Educação</option>
+                        <option value="Outros">Outros</option>
+                    </select>
+                </div>
+                <div>
+                    <label style="font-size:0.75rem;font-weight:600;color:#6b7280;display:block;margin-bottom:0.3rem;">FORMA DE PAGAMENTO</label>
+                    <select id="al-pagamento" style="width:100%;padding:0.55rem 0.75rem;border:1px solid #d1d5db;border-radius:7px;font-size:0.92rem;color:#1f2937;box-sizing:border-box;">
+                        <option value="">Selecione</option>
+                    </select>
+                </div>
+            </div>
+            <div style="display:flex;gap:0.65rem;">
+                <button id="al-cancelar" style="flex:1;padding:0.8rem;background:#f3f4f6;color:#374151;border:none;border-radius:8px;font-size:0.9rem;font-weight:600;cursor:pointer;">✕ Cancelar</button>
+                <button id="al-aprovar" style="flex:2;padding:0.8rem;background:#6366f1;color:white;border:none;border-radius:8px;font-size:0.9rem;font-weight:700;cursor:pointer;">✓ Aprovar lançamento</button>
+            </div>
+            <div id="al-status" style="margin-top:0.65rem;text-align:center;font-size:0.82rem;color:#6b7280;display:none;"></div>
+        </div>`;
+
+    document.body.appendChild(overlay);
+
+    function popularPagamento() {
+        const sel = document.getElementById('al-pagamento');
+        if (!sel) return;
+        sel.innerHTML = '';
+        cartoes.forEach(c => {
+            const op = document.createElement('option');
+            op.value = 'Cartão ' + c.nome;
+            op.textContent = 'Cartão ' + c.nome;
+            if (cartao && c.nome.toLowerCase().includes(cartao.toLowerCase())) op.selected = true;
+            sel.appendChild(op);
+        });
+        ['PIX','Boleto','Débito Automático'].forEach(v => {
+            const op = document.createElement('option');
+            op.value = v; op.textContent = v;
+            sel.appendChild(op);
+        });
+    }
+
+    const tentarPopular = setInterval(() => {
+        if (cartoes.length > 0) { popularPagamento(); clearInterval(tentarPopular); }
+    }, 300);
+    setTimeout(() => clearInterval(tentarPopular), 6000);
+
+    document.getElementById('al-cancelar').onclick = () => overlay.remove();
+
+    document.getElementById('al-aprovar').onclick = async () => {
+        const btn = document.getElementById('al-aprovar');
+        const status = document.getElementById('al-status');
+        const descVal = document.getElementById('al-desc').value.trim();
+        const valorVal = parseFloat(document.getElementById('al-valor').value);
+        const dataVal = document.getElementById('al-data').value;
+        const catVal = document.getElementById('al-categoria').value;
+        const pagVal = document.getElementById('al-pagamento').value;
+
+        if (!descVal || !valorVal || !dataVal || !catVal || !pagVal) {
+            status.textContent = '⚠️ Preencha todos os campos.';
+            status.style.display = 'block';
+            return;
+        }
+
+        btn.disabled = true;
+        btn.textContent = 'Salvando...';
+        status.style.display = 'none';
+
+        const lancamento = { tipo: 'Despesa', descricao: descVal, valor: valorVal, categoria: catVal, formaPagamento: pagVal, data: dataVal };
+
+        try {
+            lancamentos.push(lancamento);
+            await salvarFirebase('lancamentos', lancamentos);
+            btn.textContent = '✓ Lançado com sucesso!';
+            btn.style.background = '#22c55e';
+            setTimeout(() => { overlay.remove(); atualizarTabelaLancamentos(); atualizarDashboard(); }, 1500);
+        } catch(e) {
+            btn.disabled = false;
+            btn.textContent = '✓ Aprovar lançamento';
+            status.textContent = '❌ Erro ao salvar. Tente novamente.';
+            status.style.display = 'block';
+        }
+    };
+}
+
+window.__atalhoURLPendente = new URLSearchParams(window.location.search).has('atalho');
 
 document.addEventListener('DOMContentLoaded', function() {
     document.getElementById('data').value = new Date().toISOString().split('T')[0];
